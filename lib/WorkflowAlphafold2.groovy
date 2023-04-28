@@ -2,6 +2,7 @@
 // This file holds several functions specific to the workflow/proteinfold.nf in the nf-core/proteinfold pipeline
 //
 
+import nextflow.Nextflow
 import groovy.text.SimpleTemplateEngine
 
 class WorkflowAlphafold2 {
@@ -10,6 +11,15 @@ class WorkflowAlphafold2 {
     // Check and validate parameters
     //
     public static void initialise(params, log) {
+<<<<<<< HEAD:lib/WorkflowAlphafold2.groovy
+=======
+        genomeExistsError(params, log)
+
+
+        if (!params.fasta) {
+            Nextflow.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
+        }
+>>>>>>> Template update for nf-core/tools version 2.8:lib/WorkflowProteinfold.groovy
     }
 
     //
@@ -54,5 +64,22 @@ class WorkflowAlphafold2 {
         def description_html = engine.createTemplate(methods_text).make(meta)
 
         return description_html
+<<<<<<< HEAD:lib/WorkflowAlphafold2.groovy
+=======
+    }
+
+    //
+    // Exit pipeline if incorrect --genome key provided
+    //
+    private static void genomeExistsError(params, log) {
+        if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
+            def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "  Genome '${params.genome}' not found in any config files provided to the pipeline.\n" +
+                "  Currently, the available genome keys are:\n" +
+                "  ${params.genomes.keySet().join(", ")}\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+            Nextflow.error(error_string)
+        }
+>>>>>>> Template update for nf-core/tools version 2.8:lib/WorkflowProteinfold.groovy
     }
 }
