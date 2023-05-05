@@ -37,7 +37,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Running the pipeline
 
-The typical commands for running the pipeline on AlphaFold2 and Colabfold modes are as follows:
+The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
 ```console
 nextflow run nf-core/proteinfold \
@@ -384,6 +384,7 @@ If you specify the `--colabfold_db ` parameter, the directory structure of your 
     ├── uniref30_2202_db_seq_h.dbtype -> uniref30_2202_db_h.dbtype
     ├── uniref30_2202_db_seq_h.index -> uniref30_2202_db_h.index
     └── uniref30_2202_db_seq.index
+
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
