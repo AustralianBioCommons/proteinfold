@@ -12,7 +12,6 @@
 
 ## Introduction
 
-<<<<<<< HEAD
 **nf-core/proteinfold** is a bioinformatics pipeline that ...
 
 <!-- TODO nf-core:
@@ -20,8 +19,6 @@
    major pipeline sections and the types of output it produces. You're giving an overview to someone new
    to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
 -->
-=======
-**nf-core/proteinfold** is a bioinformatics best-practice analysis pipeline for Protein 3D structure prediction pipeline.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
