@@ -143,6 +143,7 @@ The pipeline takes care of downloading the required databases and parameters req
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
 
 
+For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).
 
 ## Pipeline output
 - Typical command to run esmfold mode:
@@ -161,7 +162,7 @@ The pipeline takes care of downloading the required databases and parameters req
 
 ## Documentation
 
-To see the the results of a test run with a full size dataset refer to the [results](https://nf-co.re/proteinfold/results) tab on the nf-core website pipeline page.
+To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/proteinfold/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
 [output documentation](https://nf-co.re/proteinfold/output).
 
