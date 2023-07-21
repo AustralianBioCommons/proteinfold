@@ -11,21 +11,6 @@ class WorkflowAlphafold2 {
     // Check and validate parameters
     //
     public static void initialise(params, log) {
-<<<<<<< HEAD:lib/WorkflowAlphafold2.groovy
-<<<<<<< HEAD:lib/WorkflowAlphafold2.groovy
-=======
-=======
-
->>>>>>> Template update for nf-core/tools version 2.9:lib/WorkflowProteinfold.groovy
-        genomeExistsError(params, log)
-
-
-        if (!params.fasta) {
-            Nextflow.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
-        }
->>>>>>> Template update for nf-core/tools version 2.8:lib/WorkflowProteinfold.groovy
-    }
-
     //
     // Get workflow summary for MultiQC
     //
@@ -110,8 +95,6 @@ class WorkflowAlphafold2 {
         def description_html = engine.createTemplate(methods_text).make(meta)
 
         return description_html
-<<<<<<< HEAD:lib/WorkflowAlphafold2.groovy
-=======
     }
 
     //
@@ -126,6 +109,5 @@ class WorkflowAlphafold2 {
                 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
             Nextflow.error(error_string)
         }
->>>>>>> Template update for nf-core/tools version 2.8:lib/WorkflowProteinfold.groovy
     }
 }
