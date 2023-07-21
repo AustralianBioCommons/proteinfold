@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryLog; paramsSummaryMap } from 'plugin/nf-validation'
+include { paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
 
 <<<<<<< HEAD:workflows/esmfold.nf
 // Validate input parameters
@@ -19,17 +19,6 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input file not specified!' }
-=======
-def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
-def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
-def summary_params = paramsSummaryMap(workflow)
-
-// Print parameter summary log to screen
-log.info logo + paramsSummaryLog(workflow) + citation
-
-WorkflowProteinfold.initialise(params, log)
->>>>>>> Template update for nf-core/tools version 2.9:workflows/proteinfold.nf
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -37,9 +26,9 @@ WorkflowProteinfold.initialise(params, log)
 */
 
 ch_multiqc_config          = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config, checkIfExists: true ) : Channel.empty()
-ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo, checkIfExists: true ) : Channel.empty()
-ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config ) : Channel.empty()
+ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo )   : Channel.empty()
+ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,7 +39,6 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK         } from '../subworkflows/local/input_check'
 include { PREPARE_ESMFOLD_DBS } from '../subworkflows/local/prepare_esmfold_dbs'
 
 //
@@ -85,15 +73,11 @@ workflow ESMFOLD {
     ch_versions = Channel.empty()
 
     //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    // Create input channel from input file provided through params.input
     //
-    INPUT_CHECK (
-        file(params.input)
-    )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-    // TODO: OPTIONAL, you can use nf-validation plugin to create an input channel from the samplesheet with Channel.fromSamplesheet("input")
-    // See the documentation https://nextflow-io.github.io/nf-validation/samplesheets/fromSamplesheet/
-    // ! There is currently no tooling to help you write a sample sheet schema
+    Channel
+        .fromSamplesheet("input")
+        .set { ch_fasta }
 
     PREPARE_ESMFOLD_DBS( )
     ch_versions = ch_versions.mix(PREPARE_ESMFOLD_DBS.out.versions)
@@ -103,7 +87,7 @@ workflow ESMFOLD {
     //
     if (params.esmfold_model_preset != 'monomer') {
         MULTIFASTA_TO_SINGLEFASTA(
-            INPUT_CHECK.out.fastas
+            ch_fasta
         )
         ch_versions = ch_versions.mix(MULTIFASTA_TO_SINGLEFASTA.out.versions)
         RUN_ESMFOLD(
@@ -114,7 +98,7 @@ workflow ESMFOLD {
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     } else {
         RUN_ESMFOLD(
-            INPUT_CHECK.out.fastas,
+            ch_fasta,
             PREPARE_ESMFOLD_DBS.out.params,
             params.num_recycles
         )
