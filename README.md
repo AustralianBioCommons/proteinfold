@@ -1,6 +1,7 @@
 # ![nf-core/proteinfold](docs/images/nf-core-proteinfold_logo_light.png#gh-light-mode-only) ![nf-core/proteinfold](docs/images/nf-core-proteinfold_logo_dark.png#gh-dark-mode-only)
 
-[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/proteinfold/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.7629995-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.7629995)
+[![GitHub Actions CI Status](https://github.com/nf-core/proteinfold/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/proteinfold/actions?query=workflow%3A%22nf-core+CI%22)
+[![GitHub Actions Linting Status](https://github.com/nf-core/proteinfold/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/proteinfold/actions?query=workflow%3A%22nf-core+linting%22)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/proteinfold/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
@@ -42,10 +43,11 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Usage
 
-> **Note**
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how
-> to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline)
-> with `-profile test` before running the workflow on actual data.
+:::note
+If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how
+to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline)
+with `-profile test` before running the workflow on actual data.
+:::
 
 <!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
      Explain what rows and columns represent. For instance (please edit as appropriate):
@@ -74,74 +76,11 @@ nextflow run nf-core/proteinfold \
    --outdir <OUTDIR>
 ```
 
-The pipeline takes care of downloading the required databases and parameters required by AlphaFold2 and/or Colabfold. In case you have already downloaded the required files, you can skip this step by providing the path using the corresponding parameter [`--alphafold2_db`] or [`--colabfold_db`]
-
-- Typical command to run AlphaFold2 mode:
-
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode alphafold2 \
-      --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
-      --alphafold2_model_preset monomer \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
-
-- Typical command to run AlphaFold2 splitting the MSA from the prediction execution:
-
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode alphafold2 \
-      --alphafold2_mode split_msa_prediction \
-      --alphafold2_db <null (default) | DB_PATH> \
-      --full_dbs <true/false> \
-      --alphafold2_model_preset monomer \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
-
-- Typical command to run colabfold_local mode:
-
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode colabfold \
-      --colabfold_server local \
-      --colabfold_db <null (default) | PATH> \
-      --num_recycle 3 \
-      --use_amber <true/false> \
-      --colabfold_model_preset "AlphaFold2-ptm" \
-      --use_gpu <true/false> \
-      --db_load_mode 0
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
-
-- Typical command to run colabfold_webserver mode:
-
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-      --mode colabfold \
-      --colabfold_server webserver \
-      --host_url <custom MMSeqs2 API Server URL> \
-      --colabfold_db <null (default) | PATH> \
-      --num_recycle 3 \
-      --use_amber <true/false> \
-      --colabfold_model_preset "AlphaFold2-ptm" \
-      --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
-
-  > **Warning**
-  > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
-
+:::warning
+Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those
+provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
+see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+:::
 
 For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).
 
