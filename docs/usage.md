@@ -22,10 +22,11 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 A final samplesheet file may look something like the one below. This is for 2 sequences.
 
-```console
-sequence,fasta
-T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
-T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
+```csv title="samplesheet.csv"
+sample,fastq_1,fastq_2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
+CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
 ```
 
 | Column     | Description                                                                                         |
@@ -39,16 +40,15 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
-```console
-nextflow run nf-core/proteinfold \
-       --input samplesheet.csv \
-       --outdir <OUTDIR> \
-       --mode alphafold2 \
-       --alphafold2_db <null (default) | DB_PATH> \
-       --full_dbs <true/false> \
-       --alphafold2_model_preset monomer \
-       --use_gpu <true/false> \
-       -profile <docker>
+```csv title="samplesheet.csv"
+sample,fastq_1,fastq_2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
+CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
+TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
+TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
+TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
+TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
 ```
 
 ```console
