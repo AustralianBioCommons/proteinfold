@@ -24,7 +24,7 @@ class WorkflowMain {
     //
     // Validate parameters and print summary to screen
     //
-    public static void initialise(workflow, params, log) {
+    public static void initialise(workflow, params, log, args) {
 
         // Print workflow version and exit on --version
         if (params.version) {
@@ -35,6 +35,8 @@ class WorkflowMain {
 
         // Check that a -profile or Nextflow config has been provided to run the pipeline
         NfcoreTemplate.checkConfigProvided(workflow, log)
+        // Check that the profile doesn't contain spaces and doesn't end with a trailing comma
+        checkProfile(workflow.profile, args, log)
 
         // Check that conda channels are set-up correctly
         if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
@@ -58,28 +60,14 @@ class WorkflowMain {
     }
 
     //
-    // Get link to Colabfold Alphafold2 parameters
+    // Exit pipeline if --profile contains spaces
     //
-    public static String getColabfoldAlphafold2Params(params) {
-        def link = null
-        if (params.colabfold_alphafold2_params_tags) {
-            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-                link = "https://storage.googleapis.com/alphafold/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ] + '.tar'
-            }
+    private static void checkProfile(profile, args, log) {
+        if (profile.endsWith(',')) {
+            Nextflow.error "Profile cannot end with a trailing comma. Please remove the comma from the end of the profile string.\nHint: A common mistake is to provide multiple values to `-profile` separated by spaces. Please use commas to separate profiles instead,e.g., `-profile docker,test`."
         }
-        return link
-    }
-
-    //
-    // Get path to Colabfold Alphafold2 parameters
-    //
-    public static String getColabfoldAlphafold2ParamsPath(params) {
-        def path = null
-        if (params.colabfold_alphafold2_params_tags) {
-            if (params.colabfold_alphafold2_params_tags.containsKey(params.colabfold_model_preset.toString())) {
-                path = "${params.colabfold_db}/params/" + params.colabfold_alphafold2_params_tags[ params.colabfold_model_preset.toString() ]
-            }
+        if (args[0]) {
+            log.warn "nf-core pipelines do not accept positional arguments. The positional argument `${args[0]}` has been detected.\n      Hint: A common mistake is to provide multiple values to `-profile` separated by spaces. Please use commas to separate profiles instead,e.g., `-profile docker,test`."
         }
-        return path
     }
 }
