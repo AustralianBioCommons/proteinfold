@@ -41,27 +41,28 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are as follows:
 
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker>
 ```
 
 ```console
 nextflow run nf-core/proteinfold \
-    --input samplesheet.csv \
-    --outdir <OUTDIR> \
-    --mode alphafold2 \
-    --alphafold2_mode split_msa_prediction \
-    --alphafold2_db <null (default) | DB_PATH> \
-    --full_dbs <true/false> \
-    --alphafold2_model_preset monomer \
-    --use_gpu <true/false> \
-    -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_mode split_msa_prediction \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
 
 If you specify the `--alphafold2_db ` parameter, the directory structure of your path should be like this:
@@ -233,7 +234,7 @@ nextflow run nf-core/proteinfold \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
       --db_load_mode 0
-       -profile <docker>
+      -profile <docker>
 ```
 
 ```console
@@ -248,7 +249,7 @@ nextflow run nf-core/proteinfold \
       --use_amber <true/false> \
       --colabfold_model_preset "AlphaFold2-ptm" \
       --use_gpu <true/false> \
-       -profile <docker>
+      -profile <docker>
 ```
 
 If you specify the `--colabfold_db ` parameter, the directory structure of your path should be like this:
@@ -384,6 +385,19 @@ If you specify the `--colabfold_db ` parameter, the directory structure of your 
     ├── uniref30_2202_db_seq_h.dbtype -> uniref30_2202_db_h.dbtype
     ├── uniref30_2202_db_seq_h.index -> uniref30_2202_db_h.index
     └── uniref30_2202_db_seq.index
+```
+
+```console
+nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode esmfold
+      --esmfold_db <null (default) | DB_PATH> \
+      --num_recycles 4 \
+      --esmfold_model_preset <monomer/multimer> \
+      --use_gpu <true/false> \
+      -profile <docker>
+```
 
 ```bash
 nextflow run nf-core/proteinfold --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
