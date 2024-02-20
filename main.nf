@@ -17,6 +17,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+<<<<<<< HEAD
 if (params.mode == "alphafold2") {
     include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
     include { ALPHAFOLD2             } from './workflows/alphafold2'
@@ -53,14 +54,33 @@ params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
 params.colabfold_alphafold2_params      = getColabfoldAlphafold2Params()
 params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 >>>>>>> First iteration towards lib removal
+=======
+include { PROTEINFOLD  } from './workflows/proteinfold'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
+
+include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    GENOME PARAMETER VALUES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+// TODO nf-core: Remove this line if you don't need a FASTA file
+//   This is an example of how to use getGenomeAttribute() to fetch parameters
+//   from igenomes.config using `--genome`
+params.fasta = getGenomeAttribute('fasta')
+>>>>>>> Template update for nf-core/tools version 2.13
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 //
+<<<<<<< HEAD
 // WORKFLOW: Run main analysis pipeline
 //
 workflow NFCORE_PROTEINFOLD {
@@ -183,20 +203,41 @@ workflow NFCORE_PROTEINFOLD {
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]
 }
+=======
+// WORKFLOW: Run main analysis pipeline depending on type of input
+//
+workflow NFCORE_PROTEINFOLD {
+>>>>>>> Template update for nf-core/tools version 2.13
 
+    take:
+    samplesheet // channel: samplesheet read in from --input
+
+    main:
+
+    //
+    // WORKFLOW: Run pipeline
+    //
+    PROTEINFOLD (
+        samplesheet
+    )
+
+    emit:
+    multiqc_report = PROTEINFOLD.out.multiqc_report // channel: /path/to/multiqc_report.html
+
+}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN ALL WORKFLOWS
+    RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// WORKFLOW: Execute a single named workflow for the pipeline
-// See: https://github.com/nf-core/rnaseq/issues/619
-//
 workflow {
 
     main:
+<<<<<<< HEAD
+=======
+
+>>>>>>> Template update for nf-core/tools version 2.13
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -206,13 +247,24 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
+<<<<<<< HEAD
         params.outdir
+=======
+        params.outdir,
+        params.input
+>>>>>>> Template update for nf-core/tools version 2.13
     )
 
     //
     // WORKFLOW: Run main workflow
     //
+<<<<<<< HEAD
     NFCORE_PROTEINFOLD ()
+=======
+    NFCORE_PROTEINFOLD (
+        PIPELINE_INITIALISATION.out.samplesheet
+    )
+>>>>>>> Template update for nf-core/tools version 2.13
 
     //
     // SUBWORKFLOW: Run completion tasks
