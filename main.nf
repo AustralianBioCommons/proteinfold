@@ -136,7 +136,7 @@ workflow NFCORE_PROTEINFOLD {
             params.create_colabfold_index
         )
         ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
-        
+
         //
         // WORKFLOW: Run nf-core/colabfold workflow
         //
