@@ -40,38 +40,8 @@ include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 params.colabfold_alphafold2_params      = WorkflowMain.getColabfoldAlphafold2Params(params)
 params.colabfold_alphafold2_params_path = WorkflowMain.getColabfoldAlphafold2ParamsPath(params)
-=======
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
->>>>>>> Template update for nf-core/tools version 2.10
-=======
-params.colabfold_alphafold2_params      = getColabfoldAlphafold2Params()
-params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
->>>>>>> First iteration towards lib removal
-=======
-include { PROTEINFOLD  } from './workflows/proteinfold'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    GENOME PARAMETER VALUES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
->>>>>>> Template update for nf-core/tools version 2.13
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,7 +50,6 @@ params.fasta = getGenomeAttribute('fasta')
 */
 
 //
-<<<<<<< HEAD
 // WORKFLOW: Run main analysis pipeline
 //
 workflow NFCORE_PROTEINFOLD {
@@ -111,7 +80,7 @@ workflow NFCORE_PROTEINFOLD {
             params.uniprot_path,
             params.bfd_link,
             params.small_bfd_link,
-            params.alphafold2_params,
+            params.alphafold2_params_link,
             params.mgnify_link,
             params.pdb70_link,
             params.pdb_mmcif_link,
@@ -160,7 +129,7 @@ workflow NFCORE_PROTEINFOLD {
             params.colabfold_alphafold2_params_path,
             params.colabfold_db_path,
             params.uniref30_colabfold_path,
-            params.colabfold_alphafold2_params,
+            params.colabfold_alphafold2_params_link,
             params.colabfold_db_link,
             params.uniref30_colabfold_link,
             params.create_colabfold_index
@@ -213,11 +182,6 @@ workflow NFCORE_PROTEINFOLD {
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html
     versions       = ch_versions // channel: [version1, version2, ...]
 }
-=======
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
-workflow NFCORE_PROTEINFOLD {
->>>>>>> Template update for nf-core/tools version 2.13
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -228,10 +192,6 @@ workflow NFCORE_PROTEINFOLD {
 workflow {
 
     main:
-<<<<<<< HEAD
-=======
-
->>>>>>> Template update for nf-core/tools version 2.13
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -241,24 +201,13 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
-<<<<<<< HEAD
         params.outdir
-=======
-        params.outdir,
-        params.input
->>>>>>> Template update for nf-core/tools version 2.13
     )
 
     //
     // WORKFLOW: Run main workflow
     //
-<<<<<<< HEAD
     NFCORE_PROTEINFOLD ()
-=======
-    NFCORE_PROTEINFOLD (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
->>>>>>> Template update for nf-core/tools version 2.13
 
     //
     // SUBWORKFLOW: Run completion tasks
