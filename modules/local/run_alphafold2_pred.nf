@@ -29,7 +29,8 @@ process RUN_ALPHAFOLD2_PRED {
     path  msa
 
     output:
-    path ("${fasta.baseName}*")
+    tuple val(meta), path ("${fasta.baseName}*")
+    tuple val(meta), path ("${fasta.baseName}*/*"), emit: af_out
     path "*_mqc.tsv", emit: multiqc
     path "versions.yml", emit: versions
 
