@@ -10,7 +10,8 @@
 include { RUN_ALPHAFOLD2      } from '../modules/local/run_alphafold2'
 include { RUN_ALPHAFOLD2_MSA  } from '../modules/local/run_alphafold2_msa'
 include { RUN_ALPHAFOLD2_PRED } from '../modules/local/run_alphafold2_pred'
-
+include { EXTRACT_OUTPUTS } from '../modules/local/extract_outputs'
+include { GENERATE_REPORT } from '../modules/local/generat_report'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -74,6 +75,7 @@ workflow ALPHAFOLD2 {
             .transpose()
             .set { ch_fasta }
     }
+    ch_alphafold_outputs = Channel.empty()
 
     if (alphafold2_mode == 'standard') {
         //
@@ -96,6 +98,7 @@ workflow ALPHAFOLD2 {
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
+         
 
     } else if (alphafold2_mode == 'split_msa_prediction') {
         //
@@ -117,7 +120,11 @@ workflow ALPHAFOLD2 {
             ch_uniprot
         )
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
-
+        
+        RUN_ALPHAFOLD2_MSA.out.features
+            .map{[it.getName().split("\\.")[0], [it]]}
+            .set{ch_features}
+        
         RUN_ALPHAFOLD2_PRED (
             ch_fasta,
             full_dbs,
@@ -136,8 +143,37 @@ workflow ALPHAFOLD2 {
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
+        RUN_ALPHAFOLD2_PRED.out.af_out.set{ch_alphafold_outputs}
+                
     }
 
+    ch_alphafold_outputs
+        .map{[it[0].id, it[1].findAll { it.getName().endsWith('.pkl') && it.getName().startsWith('result_model_') } ]}
+        .set{ch_pred}
+
+    EXTRACT_OUTPUTS(ch_features.mix(ch_pred))
+
+    
+    ch_alphafold_outputs
+        .map{[it[0].id, it[1].findAll { it.getName().endsWith('.pdb') && it.getName().startsWith('ranked_') } ]}
+        .set{ch_pdb}
+    
+    
+    EXTRACT_OUTPUTS.out.msa_info.join(
+        EXTRACT_OUTPUTS.out.lddt_info.join(
+            ch_pdb
+        )
+    ).set{ch_all}
+    
+    GENERATE_REPORT(
+        ch_all.map{[it[0], it[1]]},
+        ch_all.map{[it[0], it[2]]},
+        ch_all.map{[it[0], it[3]]},
+        Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
+        Channel.fromPath("$projectDir/assets/generat_plots_2.py").first(),
+        
+    )
+ 
     //
     // Collate and save software versions
     //
