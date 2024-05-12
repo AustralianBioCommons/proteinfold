@@ -4,6 +4,7 @@ import os
 from matplotlib import pyplot as plt
 import argparse
 from collections import OrderedDict
+import base64
 
 def generate_output_images(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -123,10 +124,20 @@ structures.sort()
 
 alphfold_template = open(args.html_template, "r").read()
 alphfold_template = alphfold_template.replace(f"*sample_name_here*", args.name)
+
 i = 0
 for structure in structures:
     alphfold_template = alphfold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))
     i += 1
+
+with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
+    alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+        
+for i in range(0, 5):
+    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
+        alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+        
+
 
 with open(f"{args.output_dir}/{args.name}_alphafold.html", "w") as out_file:
     out_file.write(alphfold_template)
