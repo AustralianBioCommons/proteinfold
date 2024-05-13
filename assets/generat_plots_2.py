@@ -5,6 +5,10 @@ from matplotlib import pyplot as plt
 import argparse
 from collections import OrderedDict
 import base64
+import os
+from collections import OrderedDict
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def generate_output_images(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -102,6 +106,71 @@ def generate_output_images(msa_path, plddt_paths, name, out_dir):
     ##################################################################
 
 
+def generate_plots(msa_path, plddt_paths, name, out_dir):
+    msa = []
+    with open(msa_path, 'r') as in_file:
+        for line in in_file:
+            msa.append([int(x) for x in line.strip().split()])
+
+    seqid = []
+    for sequence in msa:
+        matches = [1.0 if first == other else 0.0 for first, other in zip(msa[0], sequence)]
+        seqid.append(sum(matches) / len(matches))
+
+    seqid_sort = sorted(range(len(seqid)), key=seqid.__getitem__)
+
+    non_gaps = []
+    for sequence in msa:
+        non_gaps.append([float(num != 21) if num != 21 else float('nan') for num in sequence])
+
+    sorted_non_gaps = [non_gaps[i] for i in seqid_sort]
+    final = []
+    for sorted_seq, identity in zip(sorted_non_gaps, [seqid[i] for i in seqid_sort]):
+        final.append([value * identity if not isinstance(value, str) else value for value in sorted_seq])
+
+    # Plotting Sequence Coverage using Plotly
+    fig = go.Figure()
+    fig.add_trace(go.Heatmap(
+        z=final,
+        colorscale="Rainbow",
+        zmin=0,
+        zmax=1,
+    ))
+    fig.update_layout(
+        title="Sequence coverage",
+        xaxis_title="Positions",
+        yaxis_title="Sequences"
+    )
+    # Save as interactive HTML instead of an image
+    fig.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
+    """
+    #fig.to_html(full_html=False).write_html(f"{out_dir}/{name+('_' if name else '')}seq_coverage.html")
+    with open (f"{out_dir}/{name+('_' if name else '')}seq_coverage.html", "w") as out_plt:
+        out_plt.write(fig.to_html(full_html=False))
+    """
+    # Plotting Predicted LDDT per position using Plotly
+    plddt_per_model = OrderedDict()
+    plddt_paths.sort()
+    for plddt_path in plddt_paths:
+        with open(plddt_path, 'r') as in_file:
+            plddt_per_model[os.path.basename(plddt_path)[:-4]] = [float(x) for x in in_file.read().strip().split()]
+
+    i = 0
+    for model_name, value_plddt in plddt_per_model.items():
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=list(range(len(value_plddt))),
+            y=value_plddt,
+            mode='lines',
+            name=model_name
+        ))
+        fig.update_layout(title="Predicted LDDT per Position")
+        fig.savefig(f"{out_dir}/{name+('_' if name else '')}coverage_LDDT_{i}.png")
+        """
+        with open (f"{out_dir}/{name+('_' if name else '')}coverage_LDDT_{i}.html", "w") as out_plt:
+            out_plt.write(fig.to_html(full_html=False).replace("\"", "\\\""))
+        """
+        i += 1
 
 print("Starting..")
 parser = argparse.ArgumentParser()
@@ -118,6 +187,8 @@ args = parser.parse_args()
 
 generate_output_images(args.msa, args.plddt, args.name, args.output_dir)
 
+#generate_plots(args.msa, args.plddt, args.name, args.output_dir)
+
 print("generating html report...")
 structures = args.pdb
 structures.sort()
@@ -130,14 +201,23 @@ for structure in structures:
     alphfold_template = alphfold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))
     i += 1
 
-with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
-    alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+if True:
+    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
+        alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+            
+    for i in range(0, 5):
+        with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
+            alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
         
+       
+"""
+with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
+    alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"{in_file.read()}")
+
 for i in range(0, 5):
-    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
-        alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
-        
+    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.html", "r") as in_file:
+        alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
-
+"""
 with open(f"{args.output_dir}/{args.name}_alphafold.html", "w") as out_file:
     out_file.write(alphfold_template)
