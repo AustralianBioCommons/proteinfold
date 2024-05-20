@@ -136,11 +136,15 @@ workflow ALPHAFOLD2 {
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2_MSA.out.versions)
         
         RUN_ALPHAFOLD2_MSA.out.features
-            .map{[it.getName().split("\\.")[0], [it]]}
-            .set{ch_features}
-        
+            .map{[it[0].id, it[0], it[1]]}
+            .join(
+         ch_fasta
+            .map{[it[0].id, it[0], it[1]]}
+            )
+        .set{ch_af_all}
+
         RUN_ALPHAFOLD2_PRED (
-            ch_fasta,
+            ch_af_all.map{[it[3], it[4]]},
             full_dbs,
             alphafold2_model_preset,
             ch_alphafold2_params,
@@ -153,7 +157,7 @@ workflow ALPHAFOLD2 {
             ch_uniref90,
             ch_pdb_seqres,
             ch_uniprot,
-            RUN_ALPHAFOLD2_MSA.out.features
+            ch_af_all.map{it[2]}
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
