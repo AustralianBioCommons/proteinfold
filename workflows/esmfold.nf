@@ -120,7 +120,7 @@ workflow ESMFOLD {
     ).set{ch_all}
     
     GENERATE_REPORT(
-        Channel.of([["id":"TEMP"], file("$projectDir/assets/NO_FILE")]),
+        Channel.value([["id":"TEMP"], file("$projectDir/assets/NO_FILE")]),
         ch_all.map{[it[1], [it[2]]]},
         ch_all.map{[it[3], [it[4]]]},
         Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
