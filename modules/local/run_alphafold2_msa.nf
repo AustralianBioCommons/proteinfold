@@ -28,8 +28,8 @@ process RUN_ALPHAFOLD2_MSA {
     path ('uniprot/*')
 
     output:
-    path ("${fasta.baseName}*")
-    path ("${fasta.baseName}.features.pkl"), emit: features
+    tuple val(meta), path ("${fasta.baseName}*")
+    tuple val(meta), path ("${fasta.baseName}.features.pkl"), emit: features
     path "versions.yml"                    , emit: versions
 
     when:
