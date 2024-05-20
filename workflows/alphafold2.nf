@@ -41,7 +41,6 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 workflow ALPHAFOLD2 {
 
     take:
-    ch_versions             // channel: [ path(versions.yml) ]
     full_dbs                // boolean: Use full databases (otherwise reduced version)
     alphafold2_mode         //  string: Mode to run Alphafold2 in
     alphafold2_model_preset //  string: Specifies the model preset to use for Alphafold2
@@ -58,10 +57,12 @@ workflow ALPHAFOLD2 {
 
     main:
     ch_multiqc_files = Channel.empty()
+    ch_versions = Channel.empty()
 
     //
     // Create input channel from input file provided through params.input
     //
+
     Channel
         .fromSamplesheet("input")
         .set { ch_fasta }
@@ -81,6 +82,9 @@ workflow ALPHAFOLD2 {
         //
         // SUBWORKFLOW: Run Alphafold2 standard mode
         //
+        //full_dbs.view()
+        //ch_alphafold2_params.view()
+
         RUN_ALPHAFOLD2 (
             ch_fasta,
             full_dbs,
@@ -96,6 +100,16 @@ workflow ALPHAFOLD2 {
             ch_pdb_seqres,
             ch_uniprot
         )
+        RUN_ALPHAFOLD2.out.af_out_tsv
+        .map{[it[0], it[1].findAll{ it.getName().contains("_lddt_")}]}
+        .set{ch_af_out_lddt}
+        
+        RUN_ALPHAFOLD2.out.af_out_tsv
+        .map{[it[0], it[1].findAll{ it.getName().contains("_msa.tsv")}]}
+        .set{ch_af_out_msa}
+
+        RUN_ALPHAFOLD2.out.af_out_pdb.set{ch_af_out_pdb}
+        
         ch_multiqc_rep = RUN_ALPHAFOLD2.out.multiqc.collect()
         ch_versions    = ch_versions.mix(RUN_ALPHAFOLD2.out.versions)
          
@@ -143,37 +157,28 @@ workflow ALPHAFOLD2 {
         )
         ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
-        RUN_ALPHAFOLD2_PRED.out.af_out.set{ch_alphafold_outputs}
+        RUN_ALPHAFOLD2_PRED.out.af_out_tsv
+        .map{[it[0], it[1].findAll{ it.getName().contains("_lddt_")}]}
+        .set{ch_af_out_lddt}
+        
+        RUN_ALPHAFOLD2_PRED.out.af_out_tsv
+        .map{[it[0], it[1].findAll{ it.getName().contains("_msa.tsv")}]}
+        .set{ch_af_out_msa}
+
+        RUN_ALPHAFOLD2_PRED.out.af_out_pdb.set{ch_af_out_pdb}
                 
     }
 
-    ch_alphafold_outputs
-        .map{[it[0].id, it[1].findAll { it.getName().endsWith('.pkl') && it.getName().startsWith('result_model_') } ]}
-        .set{ch_pred}
-
-    EXTRACT_OUTPUTS(ch_features.mix(ch_pred))
-
-    
-    ch_alphafold_outputs
-        .map{[it[0].id, it[1].findAll { it.getName().endsWith('.pdb') && it.getName().startsWith('ranked_') } ]}
-        .set{ch_pdb}
-    
-    
-    EXTRACT_OUTPUTS.out.msa_info.join(
-        EXTRACT_OUTPUTS.out.lddt_info.join(
-            ch_pdb
-        )
-    ).set{ch_all}
-    
     GENERATE_REPORT(
-        ch_all.map{[it[0], it[1]]},
-        ch_all.map{[it[0], it[2]]},
-        ch_all.map{[it[0], it[3]]},
+        ch_af_out_msa,
+        ch_af_out_lddt,
+        ch_af_out_pdb,
         Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
-        Channel.fromPath("$projectDir/assets/generat_plots_2.py").first(),
-        
+        Channel.value("ALPHAFOLD2")
     )
- 
+    
+  
+
     //
     // Collate and save software versions
     //

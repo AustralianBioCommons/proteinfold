@@ -65,52 +65,49 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
         //
-        PREPARE_ALPHAFOLD2_DBS (
-            params.alphafold2_db,
-            params.full_dbs,
-            params.bfd_path,
-            params.small_bfd_path,
-            params.alphafold2_params_path,
-            params.mgnify_path,
-            params.pdb70_path,
-            params.pdb_mmcif_path,
-            params.uniref30_alphafold2_path,
-            params.uniref90_path,
-            params.pdb_seqres_path,
-            params.uniprot_path,
-            params.bfd_link,
-            params.small_bfd_link,
-            params.alphafold2_params_link,
-            params.mgnify_link,
-            params.pdb70_link,
-            params.pdb_mmcif_link,
-            params.pdb_obsolete_link,
-            params.uniref30_alphafold2_link,
-            params.uniref90_link,
-            params.pdb_seqres_link,
-            params.uniprot_sprot_link,
-            params.uniprot_trembl_link
-        )
-        ch_versions = ch_versions.mix(PREPARE_ALPHAFOLD2_DBS.out.versions)
-
-        //
         // WORKFLOW: Run nf-core/alphafold2 workflow
         //
+
+        ch_params         = Channel.fromPath( params.alphafold2_params_path )
+        ch_mgnify         = Channel.fromPath( params.mgnify_path )
+        ch_pdb70          = Channel.fromPath( params.pdb70_path, type: 'dir' )
+        ch_mmcif_files    = Channel.fromPath( params.pdb_mmcif_path, type: 'dir' )
+        ch_mmcif_obsolete = Channel.fromPath( params.pdb_mmcif_path, type: 'file' )
+        ch_mmcif          = ch_mmcif_files.mix(ch_mmcif_obsolete)
+        ch_uniref30       = Channel.fromPath( params.uniref30_alphafold2_path, type: 'any' )
+        ch_uniref90       = Channel.fromPath( params.uniref90_path )
+        ch_pdb_seqres     = Channel.fromPath( params.pdb_seqres_path )
+        ch_uniprot        = Channel.fromPath( params.uniprot_path )
+        ch_small_bfd = Channel.fromPath( params.small_bfd_path)
+        ch_bfd = Channel.fromPath( params.bfd_path)
+        
+        /*ch_params.view()
+        ch_params.first().view()
+        ch_bfd.ifEmpty([]).first().view()
+        ch_small_bfd.ifEmpty([]).first().view()
+        
+        ch_uniref90.first().view()
+        ch_pdb_seqres.first().view()
+        ch_uniprot.first().view()
+
+        
+        */
+        
+        
         ALPHAFOLD2 (
-            ch_versions,
             params.full_dbs,
             params.alphafold2_mode,
             params.alphafold2_model_preset,
-            PREPARE_ALPHAFOLD2_DBS.out.params.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.bfd.ifEmpty([]).first(),
-            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.ifEmpty([]).first(),
-            PREPARE_ALPHAFOLD2_DBS.out.mgnify.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb70.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb_mmcif.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniref30.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniref90.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.pdb_seqres.first(),
-            PREPARE_ALPHAFOLD2_DBS.out.uniprot.first()
+            ch_params.toList(),
+            ch_bfd.ifEmpty([]).first(),
+            ch_small_bfd.ifEmpty([]).first(),
+            ch_mgnify.first(),
+            ch_pdb70.first(),
+            ch_mmcif.toList(),
+            ch_uniref30.toList(),
+            ch_uniref90.first(),
+            ch_pdb_seqres.first(),
+            ch_uniprot.first()
         )
         ch_multiqc  = ALPHAFOLD2.out.multiqc_report
         ch_versions = ch_versions.mix(ALPHAFOLD2.out.versions)
@@ -158,21 +155,22 @@ workflow NFCORE_PROTEINFOLD {
         //
         // SUBWORKFLOW: Prepare esmfold DBs
         //
-        PREPARE_ESMFOLD_DBS (
+        /*PREPARE_ESMFOLD_DBS (
             params.esmfold_db,
             params.esmfold_params_path,
             params.esmfold_3B_v1,
             params.esm2_t36_3B_UR50D,
             params.esm2_t36_3B_UR50D_contact_regression
-        )
-        ch_versions = ch_versions.mix(PREPARE_ESMFOLD_DBS.out.versions)
+        )*/
+        
+        //ch_versions = ch_versions.mix(PREPARE_ESMFOLD_DBS.out.versions)
 
         //
         // WORKFLOW: Run nf-core/esmfold workflow
         //
         ESMFOLD (
             ch_versions,
-            PREPARE_ESMFOLD_DBS.out.params,
+            params.esmfold_params_path,
             params.num_recycle
         )
         ch_multiqc  = ESMFOLD.out.multiqc_report

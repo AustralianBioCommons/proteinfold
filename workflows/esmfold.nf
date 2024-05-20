@@ -44,7 +44,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 include { RUN_ESMFOLD               } from '../modules/local/run_esmfold'
 include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singlefasta'
-
+include { GENERATE_REPORT } from '../modules/local/generat_report'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -55,6 +55,7 @@ include { MULTIFASTA_TO_SINGLEFASTA } from '../modules/local/multifasta_to_singl
 // MODULE: Installed directly from nf-core/modules
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
+
 
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
@@ -111,6 +112,21 @@ workflow ESMFOLD {
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     }
 
+    RUN_ESMFOLD.out.multiqc
+    .map{[it[0].id, it[0], it[1]]}
+    .join(
+        RUN_ESMFOLD.out.pdb
+        .map{[it[0].id, it[0], it[1]]}
+    ).set{ch_all}
+    
+    GENERATE_REPORT(
+        Channel.of([["id":"TEMP"], file("$projectDir/assets/NO_FILE")]),
+        ch_all.map{[it[1], [it[2]]]},
+        ch_all.map{[it[3], [it[4]]]},
+        Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
+        Channel.value("ESM-FOLD")
+    )
+
     //
     // Collate and save software versions
     //
@@ -142,7 +158,7 @@ workflow ESMFOLD {
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-    ch_multiqc_files = ch_multiqc_files.mix(RUN_ESMFOLD.out.multiqc.collect())
+    ch_multiqc_files = ch_multiqc_files.mix(RUN_ESMFOLD.out.multiqc.map{it[1]}.collect())
 
     MULTIQC (
         ch_multiqc_files.collect(),
@@ -151,6 +167,7 @@ workflow ESMFOLD {
         ch_multiqc_logo.toList()
     )
     ch_multiqc_report = MULTIQC.out.report.toList()
+    
     emit:
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
