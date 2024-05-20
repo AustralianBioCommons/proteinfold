@@ -10,60 +10,69 @@ from collections import OrderedDict
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-def generate_output_images(msa_path, plddt_paths, name, out_dir):
+def generate_output_images(msa_path, plddt_paths, name, out_dir, in_type):
     msa = []
-    with open(msa_path, 'r') as in_file:
-        for line in in_file:
-            msa.append([int(x) for x in line.strip().split()])
+    if not msa_path.endswith("NO_FILE"):
+        with open(msa_path, 'r') as in_file:
+            for line in in_file:
+                msa.append([int(x) for x in line.strip().split()])
 
-    seqid = []
-    for sequence in msa:
-        matches = [1.0 if first == other else 0.0 for first, other in zip(msa[0], sequence)]
-        seqid.append(sum(matches) / len(matches))
+        seqid = []
+        for sequence in msa:
+            matches = [1.0 if first == other else 0.0 for first, other in zip(msa[0], sequence)]
+            seqid.append(sum(matches) / len(matches))
 
-    seqid_sort = sorted(range(len(seqid)), key=seqid.__getitem__)
+        seqid_sort = sorted(range(len(seqid)), key=seqid.__getitem__)
 
-    non_gaps = []
-    for sequence in msa:
-        non_gaps.append([float(num != 21) if num != 21 else float('nan') for num in sequence])
+        non_gaps = []
+        for sequence in msa:
+            non_gaps.append([float(num != 21) if num != 21 else float('nan') for num in sequence])
 
-    sorted_non_gaps = [non_gaps[i] for i in seqid_sort]
-    final = []
-    for sorted_seq, identity in zip(sorted_non_gaps, [seqid[i] for i in seqid_sort]):
-        final.append([value * identity if not isinstance(value, str) else value for value in sorted_seq])
+        sorted_non_gaps = [non_gaps[i] for i in seqid_sort]
+        final = []
+        for sorted_seq, identity in zip(sorted_non_gaps, [seqid[i] for i in seqid_sort]):
+            final.append([value * identity if not isinstance(value, str) else value for value in sorted_seq])
 
-
-
-    ##################################################################
-    plt.figure(figsize=(14, 14), dpi=100)
-    ##################################################################
-    plt.title("Sequence coverage")
-    plt.imshow(final,
-               interpolation='nearest', aspect='auto',
-               cmap="rainbow_r", vmin=0, vmax=1, origin='lower')
+        ##################################################################
+        plt.figure(figsize=(14, 14), dpi=100)
+        ##################################################################
+        plt.title("Sequence coverage")
+        plt.imshow(final,
+                interpolation='nearest', aspect='auto',
+                cmap="rainbow_r", vmin=0, vmax=1, origin='lower')
+        
+        column_counts = [0] * len(msa[0])
+        for col in range(len(msa[0])):
+            for row in msa:
+                if row[col] != 21:
+                    column_counts[col] += 1
+                    
+        plt.plot(column_counts, color='black')
+        plt.xlim(-0.5, len(msa[0]) - 0.5)
+        plt.ylim(-0.5, len(msa) - 0.5)
+        
+        plt.colorbar(label="Sequence identity to query", )
+        plt.xlabel("Positions")
+        plt.ylabel("Sequences")
+        plt.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
+        
+        ##################################################################
     
-    column_counts = [0] * len(msa[0])
-    for col in range(len(msa[0])):
-        for row in msa:
-            if row[col] != 21:
-                column_counts[col] += 1
-                
-    plt.plot(column_counts, color='black')
-    plt.xlim(-0.5, len(msa[0]) - 0.5)
-    plt.ylim(-0.5, len(msa) - 0.5)
-    
-    plt.colorbar(label="Sequence identity to query", )
-    plt.xlabel("Positions")
-    plt.ylabel("Sequences")
-    plt.savefig(f"{out_dir}/{name+('_' if name else '')}seq_coverage.png")
-    
-    ##################################################################
     plddt_per_model = OrderedDict()
     plddt_paths_srt = plddt_paths
     plddt_paths_srt.sort()
     for plddt_path in plddt_paths_srt:
         with open(plddt_path, 'r') as in_file:
-            plddt_per_model[os.path.basename(plddt_path)[:-4]] = [float(x) for x in in_file.read().strip().split()]
+            if in_type == "ESM-FOLD":
+                plddt_per_model[os.path.basename(plddt_path)[:-4]] = []
+                in_file.readline()
+                for line in in_file:
+                    vals = line.strip().split()
+                    #print(vals)
+                    if len(vals) == 5:
+                        plddt_per_model[os.path.basename(plddt_path)[:-4]].append(float(vals[-1].strip()))
+            else:
+                plddt_per_model[os.path.basename(plddt_path)[:-4]] = [float(x) for x in in_file.read().strip().split()]
 
     plt.figure(figsize=(14, 14), dpi=100)
     plt.title("Predicted LDDT per position")
@@ -104,7 +113,7 @@ def generate_output_images(msa_path, plddt_paths, name, out_dir):
     plt.savefig(f"{out_dir}/{name+('_' if name else '')}PAE.png")
     """
     ##################################################################
-
+    
 
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -174,18 +183,20 @@ def generate_plots(msa_path, plddt_paths, name, out_dir):
 
 print("Starting..")
 parser = argparse.ArgumentParser()
-parser.add_argument('--msa',dest='msa',required=True)
-parser.add_argument('--plddt',dest='plddt',required=True, nargs="+")
-parser.add_argument('--pdb',dest='pdb',required=True, nargs="+")
-parser.add_argument('--name',dest='name')
+parser.add_argument('--type',  dest='in_type')
+parser.add_argument('--msa',   dest='msa',required=True)
+parser.add_argument('--plddt', dest='plddt',required=True, nargs="+")
+parser.add_argument('--pdb',   dest='pdb',required=True, nargs="+")
+parser.add_argument('--name',  dest='name')
 parser.add_argument('--output_dir',dest='output_dir')
 parser.add_argument('--html_template',dest='html_template')
 parser.set_defaults(output_dir='')
+parser.set_defaults(in_type='ESM-FOLD')
 parser.set_defaults(name='')
 args = parser.parse_args()
 
 
-generate_output_images(args.msa, args.plddt, args.name, args.output_dir)
+generate_output_images(args.msa, args.plddt, args.name, args.output_dir, args.in_type)
 
 #generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
@@ -202,10 +213,13 @@ for structure in structures:
     i += 1
 
 if True:
-    with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
-        alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
-            
-    for i in range(0, 5):
+    if not args.msa.endswith("NO_FILE"):
+        with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
+            alphfold_template = alphfold_template.replace("seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+    else:
+        alphfold_template = alphfold_template.replace("seq_coverage.png","")
+
+    for i in range(0, len(args.plddt)):
         with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
             alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
         
