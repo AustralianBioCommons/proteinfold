@@ -56,7 +56,7 @@ workflow COLABFOLD {
     Channel
         .fromSamplesheet("input")
         .set { ch_fasta }
-
+    ch_fasta.view()
     if (params.colabfold_server == 'webserver') {
         //
         // MODULE: Run colabfold
@@ -91,7 +91,7 @@ workflow COLABFOLD {
         //
         // MODULE: Run mmseqs
         //
-        if (params.colabfold_model_preset != 'AlphaFold2-ptm') {
+        if (params.colabfold_model_preset != 'alphafold2_ptm') {
             MULTIFASTA_TO_CSV(
                 ch_fasta
             )
