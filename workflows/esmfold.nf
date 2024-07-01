@@ -85,6 +85,7 @@ workflow ESMFOLD {
     //
     // Create input channel from input file provided through params.input
     //
+    
     Channel
         .fromSamplesheet("input")
         .set { ch_fasta }

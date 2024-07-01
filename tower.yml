@@ -5,3 +5,5 @@ reports:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
   "*_alphafold.html":
     display: "Predected structures"
+  "*_alphafold2.html":
+    display: "Predected structures 2"

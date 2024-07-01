@@ -207,21 +207,29 @@ structures.sort()
 alphfold_template = open(args.html_template, "r").read()
 alphfold_template = alphfold_template.replace(f"*sample_name_here*", args.name)
 
+alphfold_template2 = open(args.html_template, "r").read()
+alphfold_template2 = alphfold_template2.replace(f"*sample_name_here*", args.name)
+
+
 i = 0
 for structure in structures:
     alphfold_template = alphfold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))
+    alphfold_template2 = alphfold_template2.replace(f"*_data_ranked_{i}.pdb*", structure)
     i += 1
 
 if True:
     if not args.msa.endswith("NO_FILE"):
         with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
             alphfold_template = alphfold_template.replace("seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+        alphfold_template2 = alphfold_template2.replace("seq_coverage.png", f"{args.name + ('_' if args.name else '')}seq_coverage.png")
     else:
         alphfold_template = alphfold_template.replace("seq_coverage.png","")
+        alphfold_template2 = alphfold_template2.replace("seq_coverage.png","")
 
     for i in range(0, len(args.plddt)):
         with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
             alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+        alphfold_template2 = alphfold_template2.replace(f"coverage_LDDT_{i}.png", f"{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png")
         
        
 """
@@ -235,3 +243,6 @@ for i in range(0, 5):
 """
 with open(f"{args.output_dir}/{args.name}_alphafold.html", "w") as out_file:
     out_file.write(alphfold_template)
+
+with open(f"{args.output_dir}/{args.name}_alphafold2.html", "w") as out_file:
+    out_file.write(alphfold_template2)

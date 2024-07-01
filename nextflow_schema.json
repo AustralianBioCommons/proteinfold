@@ -29,7 +29,7 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "mode": {
+               "mode": {
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
@@ -191,6 +191,27 @@
                     "description": "Specifies whether is a 'monomer' or 'multimer' prediction",
                     "enum": ["monomer", "multimer"],
                     "fa_icon": "fas fa-stream"
+                }
+            }
+        },
+        "gadi_config_options": {
+            "title": "Institutional config options",
+            "type": "object",
+            "fa_icon": "fas fa-university",
+            "description": "Configurations for running on GADI at NCI.",
+            "help_text": ".",
+            "properties": {
+                "use_dgxa100": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true uses the DGXA 100 GPU nodes",
+                    "fa_icon": "fas fa-battery-full"
+                },
+                "project": {
+                    "type": "string",
+                    "description": "Thge project code on GADI.",
+                    "default": "",
+                    "fa_icon": "fas fa-users-cog"
                 }
             }
         },

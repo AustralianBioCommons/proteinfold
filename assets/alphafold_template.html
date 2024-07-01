@@ -570,6 +570,23 @@
       })
     }
 
+    const loadModel_n = () => {
+      reps = Object.keys(state.representations);
+      if (reps.length) {
+        state.representations = {};
+      } else {
+        reps = [DEFAULT_REPRESENTATION];
+      }
+	  
+	    // Load PDB entry
+      return stage.loadFile( uri(state.model) ).then( (o) => {
+        state.modelObject = o;
+        reps.forEach( (r) => addModelRepresentation(r) );
+        stage.setSpin(state.spin);
+        o.autoView();
+        setLoading(0);
+      })
+    }
     // Representations ---------------------------------------------------------
 
     const toggleModelRepresentation = (rep) => {
