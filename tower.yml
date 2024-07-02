@@ -7,3 +7,5 @@ reports:
     display: "Predected structures"
   "*_alphafold2.html":
     display: "Predected structures 2"
+  "*.png":
+    display: "plots"
