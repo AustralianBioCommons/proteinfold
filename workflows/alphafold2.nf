@@ -172,7 +172,7 @@ workflow ALPHAFOLD2 {
         RUN_ALPHAFOLD2_PRED.out.af_out_pdb.set{ch_af_out_pdb}
                 
     }
-
+    
     GENERATE_REPORT(
         ch_af_out_msa,
         ch_af_out_lddt,
