@@ -80,17 +80,7 @@ workflow NFCORE_PROTEINFOLD {
         ch_small_bfd = Channel.fromPath( params.small_bfd_path)
         ch_bfd = Channel.fromPath( params.bfd_path)
         
-        /*ch_params.view()
-        ch_params.first().view()
-        ch_bfd.ifEmpty([]).first().view()
-        ch_small_bfd.ifEmpty([]).first().view()
         
-        ch_uniref90.first().view()
-        ch_pdb_seqres.first().view()
-        ch_uniprot.first().view()
-
-        
-        */
         
         
         ALPHAFOLD2 (

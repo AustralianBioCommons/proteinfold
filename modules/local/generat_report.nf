@@ -4,6 +4,7 @@ process GENERATE_REPORT {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0' :
         'biocontainers/multiqc:1.21--pyhdfd78af_0' }"
+    conda "bioconda::multiqc=1.21"
 
     input:
     tuple val(meta_msa), path(msa)
@@ -23,6 +24,6 @@ process GENERATE_REPORT {
     def args = task.ext.args ?: ''
     
     """
-    generat_plots_2.py --type ${output_type} --msa ${msa} --plddt ${lddt.join(' ')} --pdb ${pdb.join(' ')} --html_template ${template} --output_dir ./ --name ${meta.id}
+    generat_plots.py --type ${output_type} --msa ${msa} --plddt ${lddt.join(' ')} --pdb ${pdb.join(' ')} --html_template ${template} --output_dir ./ --name ${meta.id}
     """
 }
