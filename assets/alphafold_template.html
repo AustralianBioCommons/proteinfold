@@ -4,12 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alphafold structure prediction</title>
+    <title>Protein structure prediction</title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"
@@ -69,16 +66,15 @@
 
   <body>
     <!-- Navigation bar -->
-    <nav class="py-6 px-12 flex justify-between">
-      <div class="flex flex-1">
+    <nav class="p-6 flex justify-between items-center bg-gray-900">
+      <div class="flex-1 flex items-center gap-6">
         <button type="button" class="-ml-1" onclick="toggleSidebar()">
-          <i class="bi bi-list text-3xl text-gray-900 hover:text-gray-400"></i>
+          <i class="bi bi-list text-3xl text-white hover:text-gray-300"></i>
         </button>
+        <img class="h-auto w-32 min-w-32" src="Australian-Biocommons-Logo-Horizontal-Reversed-RGB.png" />
       </div>
-      <img
-        class="h-12 w-auto"
-        src="https://images.squarespace-cdn.com/content/5d3a4213cf4f5b00014ea1db/1689141619044-F67XDPQLP4PG6KY862VA/Australian-Biocommons-Logo-Horizontal-RGB.png?format=1500w&content-type=image%2Fpng"
-      />
+      <div class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Protein structure prediction</div>
+
       <div class="flex-1"></div>
     </nav>
 
@@ -111,13 +107,11 @@
     ></div>
 
     <!-- Page header -->
-    <header class="bg-gray-900">
+    <!-- <header class="bg-gray-900">
       <div class="p-12">
-        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-white">
-          Alphafold structure prediction (*sample_name_here*)
-        </h1>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-white">Structure prediction</h1>
       </div>
-    </header>
+    </header> -->
 
     <!-- Main -->
     <div class="lg:flex">
@@ -135,10 +129,7 @@
         </div>
 
         <!-- Loading spinner -->
-        <div
-          class="absolute top-0 left-0 flex justify-center items-center w-full h-full"
-          id="ngl-loading"
-        >
+        <div class="absolute top-0 left-0 flex justify-center items-center w-full h-full" id="ngl-loading">
           <svg
             aria-hidden="true"
             class="inline w-16 h-16 text-white animate-spin fill-gray-300"
@@ -157,12 +148,16 @@
           </svg>
         </div>
 
+        <!-- Structure information -->
+        <div id="structure-info" class="absolute m-6 top-0 left-0 text-white">
+          <div class="text-sm font-medium mb-2">Program: (*prog_name*)</div>
+          <div class="text-sm font-medium">ID: (*sample_name*)</div>
+        </div>
+
         <!-- Model confidence -->
-        <div
-          class="hidden sm:block absolute top-0 right-0 m-6 p-6 w-60 shadow-md bg-gray-700 rounded"
-        >
+        <div class="hidden md:block absolute top-0 right-0 m-6 p-6 w-56 shadow-md bg-gray-700 rounded">
           <div class="flex justify-center mb-6">
-            <div class="w-48">
+            <div class="w-44">
               <div class="color h-6"></div>
               <div class="flex justify-between mt-2 text-white">
                 <div>&lt;50</div>
@@ -182,8 +177,7 @@
               >
                 per-residue confidence score (pLDDT)
               </a>
-              between 0 and 100. Some regions below 50 pLDDT may be unstructured
-              in isolation.
+              between 0 and 100. Some regions below 50 pLDDT may be unstructured in isolation.
             </p>
           </div>
         </div>
@@ -243,10 +237,7 @@
         </button>
 
         <!-- Canvas buttons -->
-        <div
-          id="canvas_button_container"
-          class="flex-1 p-6 pb-2 flex justify-center items-end bg-black gap-6"
-        >
+        <div id="canvas_button_container" class="flex-1 p-6 pb-2 flex justify-center items-end bg-black gap-6">
           <button
             class="selected group btn btn-canvas w-24 rounded bg-black py-3 text-sm font-semibold text-white hover:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
             id="btn-ranked_0"
@@ -314,43 +305,29 @@
       </div>
 
       <!-- Right panel -->
-      <div
-        class="flex-1 p-6 bg-gray-100 w-full flex lg:flex-col gap-12 lg:justify-between"
-      >
+      <div class="flex-1 p-6 bg-gray-100 w-full flex lg:flex-col gap-12 lg:justify-between">
         <!-- Directions -->
         <div>
-          <div class="text-2xl font-bold tracking-tight text-gray-900">
-            Navigation
-          </div>
-          <div
-            class="text-black text-sm shadow-md p-6 bg-white rounded border mt-2"
-          >
+          <div class="text-2xl font-bold tracking-tight text-gray-900">Navigation</div>
+          <div class="text-black text-sm shadow-md p-6 bg-white rounded border mt-2">
             <div class="mb-4">
-              <span
-                class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2"
+              <span class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2"
                 >Scroll up/down</span
               >
               to zoom in and out
             </div>
             <div class="mb-4">
-              <span
-                class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2"
-                >Click + drag</span
-              >
+              <span class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2">Click + drag</span>
               to rotate the structure
             </div>
             <div class="mb-4">
-              <span
-                class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2"
+              <span class="rounded font-mono text-black font-semibold text-sm bg-gray-200 py-1 px-2"
                 >CTRL + click + drag</span
               >
               to move the structure
             </div>
             <div>
-              <span
-                class="rounded text-black font-mono font-semibold text-sm bg-gray-200 py-1 px-2"
-                >Click</span
-              >
+              <span class="rounded text-black font-mono font-semibold text-sm bg-gray-200 py-1 px-2">Click</span>
               an atom to bring it into focus
             </div>
           </div>
@@ -359,18 +336,14 @@
         <!-- Buttons -->
         <div>
           <div class="mb-4">
-            <div class="text-2xl font-bold tracking-tight text-gray-900">
-              Toggle representations
-            </div>
+            <div class="text-2xl font-bold tracking-tight text-gray-900">Toggle representations</div>
             <div class="mt-2">
               <button
                 class="btn selected mr-2 mb-4 w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
                 id="btn-cartoon"
                 onclick="toggleModelRepresentation('cartoon');"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Cartoon
               </button>
               <button
@@ -378,9 +351,7 @@
                 id="btn-ball-stick"
                 onclick="toggleModelRepresentation('ball+stick');"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Ball + stick
               </button>
               <button
@@ -388,9 +359,7 @@
                 id="btn-surface"
                 onclick="toggleModelRepresentation('surface');"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Surface
               </button>
               <button
@@ -398,27 +367,21 @@
                 id="btn-backbone"
                 onclick="toggleModelRepresentation('backbone');"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Backbone
               </button>
             </div>
           </div>
 
           <div class="mb-4">
-            <div class="text-2xl font-bold tracking-tight text-gray-900">
-              Actions
-            </div>
+            <div class="text-2xl font-bold tracking-tight text-gray-900">Actions</div>
             <div class="mt-2">
               <button
                 class="btn selected mr-2 mb-4 w-28 rounded-md bg-white border border-gray-300 py-3 text-sm font-semibold text-gray-800 shadow-md hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
                 id="btn-toggle-spin"
                 onclick="toggleSpin()"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Toggle spin
               </button>
 
@@ -427,23 +390,18 @@
                 id="btn-toggle-dark"
                 onclick="toggleDark()"
               >
-                <span class="text-gray-300 mr-0.5"
-                  ><i class="bi bi-check-circle-fill"></i
-                ></span>
+                <span class="text-gray-300 mr-0.5"><i class="bi bi-check-circle-fill"></i></span>
                 Light mode
               </button>
             </div>
           </div>
-
           <div>
-            <div class="text-2xl font-bold tracking-tight text-gray-900">
-              Download
-            </div>
+            <div class="text-2xl font-bold tracking-tight text-gray-900">Download</div>
 
             <div class="mt-2">
               <button
                 type="button"
-                class="mr-2 w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                class="mr-2 mb-4 w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                 onclick="downloadPng()"
               >
                 <span class="text-white mr-0.5">
@@ -453,7 +411,7 @@
               </button>
               <button
                 type="button"
-                class="w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                class="mr-2 mb-4 w-28 rounded bg-green-600 py-3 text-sm font-semibold text-white shadow-md hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                 onclick="downloadPdb()"
               >
                 <span class="text-white mr-0.5">
@@ -480,16 +438,10 @@
       class="bg-gray-200 p-24 flex flex-col justify-center items-center gap-24 2xl:flex-row lg:justify-between 2xl:justify-around"
     >
       <div class="flex-1">
-        <div class="text-4xl font-bold tracking-tight mb-6">
-          Sequence Coverage
-        </div>
+        <div class="text-4xl font-bold tracking-tight mb-6">Sequence Coverage</div>
         <div class="p-6 bg-white shadow-md rounded">
           <div class="w-[660px] flex justify-center items-center mx-auto">
-            <img
-              class="w-[600px] h-[600px]"
-              id="seq_cov_img"
-              src="seq_coverage.png"
-            />
+            <img class="w-[600px] h-[600px]" id="seq_cov_img" src="seq_coverage.png" />
           </div>
           <!-- <div class="w-[600px] flex justify-center items-center mx-auto">
             <div id="seq_cov_placeholder"></div>
@@ -498,19 +450,14 @@
       </div>
 
       <div class="flex-1">
-        <div id="plddt-title" class="text-4xl font-bold tracking-tight mb-6">
-          pLDDT
-        </div>
+        <div id="plddt-title" class="text-4xl font-bold tracking-tight mb-6">pLDDT</div>
         <div class="p-6 bg-white shadow-md rounded">
           <!-- <img
             class="2xl:w-[660px] xl:w-[600px] w-[480px]"
             id="lddt_img"
             src="coverage_LDDT_0.png"
           /> -->
-          <div
-            id="lddt_container"
-            class="w-[660px] min-h-[600px] flex justify-center items-center mx-auto"
-          >
+          <div id="lddt_container" class="w-[660px] min-h-[600px] flex justify-center items-center mx-auto">
             <div id="lddt_placeholder"></div>
           </div>
         </div>
@@ -592,14 +539,9 @@
       }
     }
 
-    const colorScale = chroma
-      .scale(["red", "yellow", "green", "cyan", "blue"])
-      .mode("lab")
-      .domain([0, 0.9]);
+    const colorScale = chroma.scale(["red", "yellow", "green", "cyan", "blue"]).mode("lab").domain([0, 0.9]);
 
-    const confidenceScheme = NGL.ColormakerRegistry.addScheme(function (
-      params
-    ) {
+    const confidenceScheme = NGL.ColormakerRegistry.addScheme(function (params) {
       this.atomColor = function (atom) {
         // Actually model confidence (pLDDT)
         const c = atom.bfactor;
@@ -617,13 +559,7 @@
     // NGL color schemes https://nglviewer.org/ngl/api/manual/usage/coloring.html
     const COLORSCHEME = confidenceScheme; //'bfactor'
 
-    const MODELS = [
-      "ranked_0.pdb",
-      "ranked_1.pdb",
-      "ranked_2.pdb",
-      "ranked_3.pdb",
-      "ranked_4.pdb",
-    ];
+    const MODELS = ["ranked_0.pdb", "ranked_1.pdb", "ranked_2.pdb", "ranked_3.pdb", "ranked_4.pdb"];
 
     const MODELS_DATA = [
       "*_data_ranked_0.pdb*",
@@ -765,10 +701,7 @@
                   document.getElementById(`viewport${index}`).remove();
                 })
                 .catch((err) => {
-                  console.error(
-                    `Error capturing image for protein ${index}:`,
-                    err
-                  );
+                  console.error(`Error capturing image for protein ${index}:`, err);
                 });
             })
             .catch((err) => {
@@ -793,9 +726,7 @@
     // Representations ---------------------------------------------------------
 
     const toggleModelRepresentation = (rep) => {
-      rep in state.representations
-        ? removeModelRepresentation(rep)
-        : addModelRepresentation(rep);
+      rep in state.representations ? removeModelRepresentation(rep) : addModelRepresentation(rep);
     };
 
     const addModelRepresentation = (rep) => {
@@ -822,15 +753,15 @@
     const toggleDark = () => {
       const buttons = document.querySelectorAll(".btn-canvas");
       const nglNothing = document.getElementById("ngl-nothing");
-      const canvasButtonContainer = document.getElementById(
-        "canvas_button_container"
-      );
+      const structureInfo = document.getElementById("structure-info");
+      const canvasButtonContainer = document.getElementById("canvas_button_container");
       state.darkMode = !state.darkMode;
       stage.setParameters({
         backgroundColor: state.darkMode ? "black" : "white",
       });
       if (state.darkMode) {
         nglNothing.classList.replace("text-black", "text-white");
+        structureInfo.classList.replace("text-black", "text-white");
         canvasButtonContainer.classList.replace("bg-white", "bg-black");
         buttons.forEach((button) => {
           button.classList.remove("bg-white", "text-gray-900");
@@ -838,6 +769,7 @@
         });
       } else {
         nglNothing.classList.replace("text-white", "text-black");
+        structureInfo.classList.replace("text-white", "text-black");
         canvasButtonContainer.classList.replace("bg-black", "bg-white");
         buttons.forEach((button) => {
           button.classList.remove("bg-black", "text-white");
@@ -850,9 +782,7 @@
     };
 
     const setLoading = (state) => {
-      document.getElementById("ngl-loading").style.display = state
-        ? "flex"
-        : "none";
+      document.getElementById("ngl-loading").style.display = state ? "flex" : "none";
       state.loading = state;
     };
 
@@ -903,9 +833,7 @@
         const id = `#btn-${name.replace(".pdb", "")}`;
         const btn = document.querySelector(id);
         if (!btn) return;
-        i == state.model
-          ? btn.classList.add("selected")
-          : btn.classList.remove("selected");
+        i == state.model ? btn.classList.add("selected") : btn.classList.remove("selected");
       });
 
       REPRESENTATIONS.forEach((name) => {
@@ -920,9 +848,7 @@
       });
 
       // Show "Nothing to display" if no representations are selected
-      document.querySelector("#ngl-nothing").style.display = Object.keys(
-        state.representations
-      ).length
+      document.querySelector("#ngl-nothing").style.display = Object.keys(state.representations).length
         ? "none"
         : "flex";
     };

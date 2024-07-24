@@ -296,7 +296,7 @@ io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 """
 alphfold_template = open(args.html_template, "r").read()
-alphfold_template = alphfold_template.replace(f"*sample_name_here*", args.name)
+alphfold_template = alphfold_template.replace(f"*sample_name*", args.name)
 
 i = 0
 for structure in aligned_structures:
