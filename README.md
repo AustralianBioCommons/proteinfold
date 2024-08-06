@@ -13,7 +13,7 @@
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
-[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/nf-core/proteinfold)
+[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/proteinfold)
 
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23proteinfold-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/proteinfold)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
@@ -37,7 +37,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 1. Choice of protein structure prediction method:
 
-   i. [AlphaFold2](https://github.com/deepmind/alphafold)
+   i. [AlphaFold2](https://github.com/deepmind/alphafold) - Regular AlphaFold2 (MSA computation and model inference in the same process)
 
    ii. [AlphaFold2 split](https://github.com/luisas/alphafold_split) - AlphaFold2 MSA computation and model inference in separate processes
 
@@ -45,7 +45,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
    iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
-   v. [ESMFold](https://github.com/facebookresearch/esm)
+   v. [ESMFold](https://github.com/facebookresearch/esm) - Regular ESM
 
 ## Usage
 
@@ -57,36 +57,55 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 First, prepare a samplesheet with your input data that looks as follows:
 
-`samplesheet.csv`:
+The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
 
-```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-```
+- The typical command to run AlphaFold2 mode is shown below:
 
 Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
 
--->
+- Here is the command to run AlphaFold2 splitting the MSA from the prediction execution:
 
 Now, you can run the pipeline using:
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+- Below, the command to run colabfold_local mode:
 
-```bash
-nextflow run nf-core/proteinfold \
-   -profile <docker/singularity/.../institute> \
-   --input samplesheet.csv \
-   --outdir <OUTDIR>
-```
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold \
+      --colabfold_server local \
+      --colabfold_db <null (default) | PATH> \
+      --num_recycles_colabfold 3 \
+      --use_amber <true/false> \
+      --colabfold_model_preset "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      --db_load_mode 0
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
-> [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
-> see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+- The typical command to run colabfold_webserver mode would be:
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode colabfold \
+      --colabfold_server webserver \
+      --host_url <custom MMSeqs2 API Server URL> \
+      --colabfold_db <null (default) | PATH> \
+      --num_recycles_colabfold 3 \
+      --use_amber <true/false> \
+      --colabfold_model_preset "AlphaFold2-ptm" \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
-## Pipeline output
-- Typical command to run esmfold mode:
+  [!WARNING]
+
+  > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
+
+- The esmfold mode can be run using the command below:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -95,7 +114,7 @@ For more details and further functionality, please refer to the [usage documenta
       --mode esmfold \
       --esmfold_model_preset <monomer/multimer> \
       --esmfold_db <null (default) | PATH> \
-      --num_recycles 4 \
+      --num_recycles_esmfold 4 \
       --use_gpu <true/false> \
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
@@ -117,9 +136,9 @@ For more details about the output files and reports, please refer to the
 
 nf-core/proteinfold was originally written by Athanasios Baltzis ([@athbaltzis](https://github.com/athbaltzis)), Jose Espinosa-Carrasco ([@JoseEspinosa](https://github.com/JoseEspinosa)), Luisa Santus ([@luisas](https://github.com/luisas)) and Leila Mansouri ([@l-mansouri](https://github.com/l-mansouri)) from [The Comparative Bioinformatics Group](https://www.crg.eu/en/cedric_notredame) at [The Centre for Genomic Regulation, Spain](https://www.crg.eu/) under the umbrella of the [BovReg project](https://www.bovreg.eu/) and Harshil Patel ([@drpatelh](https://github.com/drpatelh)) from [Seqera Labs, Spain](https://seqera.io/).
 
-We thank the following people for their extensive assistance in the development of this pipeline:
-
 Many thanks to others who have helped out and contributed along the way too, including (but not limited to): Norman Goodacre and Waleed Osman from Interline Therapeutics ([@interlinetx](https://github.com/interlinetx)), Martin Steinegger ([@martin-steinegger](https://github.com/martin-steinegger)) and Raoul J.P. Bonnal ([@rjpbonnal](https://github.com/rjpbonnal))
+
+We would also like to thanks to the AWS Open Data Sponsorship Program for generously providing the resources necessary to host the data utilized in the testing, development, and deployment of nf-core proteinfold.
 
 ## Contributions and Support
 

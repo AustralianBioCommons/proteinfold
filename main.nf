@@ -131,7 +131,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.params.first(),
             PREPARE_COLABFOLD_DBS.out.colabfold_db.first(),
             PREPARE_COLABFOLD_DBS.out.uniref30.first(),
-            params.num_recycle
+            params.num_recycles_colabfold
         )
         ch_multiqc  = COLABFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(COLABFOLD.out.versions)
@@ -160,7 +160,7 @@ workflow NFCORE_PROTEINFOLD {
         ESMFOLD (
             ch_versions,
             Channel.fromPath(params.esmfold_params_path),
-            params.num_recycle
+            params.num_recycles_esmfold
         )
         ch_multiqc  = ESMFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(ESMFOLD.out.versions)
