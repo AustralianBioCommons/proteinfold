@@ -7,7 +7,7 @@ process MMSEQS_COLABFOLDSEARCH {
         error("Local MMSEQS_COLABFOLDSEARCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_colabfold:1.1.0"
+    container "nf-core/proteinfold_colabfold:1.1.1"
 
     input:
     tuple val(meta), path(fasta)
@@ -16,7 +16,7 @@ process MMSEQS_COLABFOLDSEARCH {
     path uniref30
 
     output:
-    tuple val(meta), path("${meta.id}.a3m"), emit: a3m
+    tuple val(meta), path("**.a3m"), emit: a3m
     path "versions.yml", emit: versions
 
     when:
@@ -47,7 +47,8 @@ process MMSEQS_COLABFOLDSEARCH {
     stub:
     def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
-    touch ${meta.id}.a3m
+    mkdir results
+    touch results/${meta.id}.a3m
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

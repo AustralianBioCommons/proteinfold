@@ -29,10 +29,11 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-               "mode": {
+                "mode": {
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
+                    "enum": ["alphafold2", "colabfold", "esmfold"],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {
@@ -129,10 +130,10 @@
                     ],
                     "fa_icon": "fas fa-stream"
                 },
-                "num_recycle": {
+                "num_recycles_colabfold": {
                     "type": "integer",
                     "default": 3,
-                    "description": "Number of recycles",
+                    "description": "Number of recycles for Colabfold",
                     "fa_icon": "fas fa-recycle"
                 },
                 "use_amber": {
@@ -179,7 +180,7 @@
                     "description": "Specifies the PARAMS path used by 'esmfold' mode",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "num_recycles": {
+                "num_recycles_esmfold": {
                     "type": "integer",
                     "default": 4,
                     "description": "Specifies the number of recycles used by Esmfold",
@@ -193,24 +194,16 @@
                 }
             }
         },
-        "gadi_config_options": {
-            "title": "Institutional config options",
+        "process_skipping_options": {
+            "title": "Process skipping options",
             "type": "object",
-            "fa_icon": "fas fa-university",
-            "description": "Configurations for running on GADI at NCI.",
-            "help_text": ".",
+            "fa_icon": "fas fa-fast-forward",
+            "description": "Options to skip various steps within the workflow.",
             "properties": {
-                "use_dgxa100": {
+                "skip_multiqc": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "If true uses the DGXA 100 GPU nodes",
-                    "fa_icon": "fas fa-battery-full"
-                },
-                "project": {
-                    "type": "string",
-                    "description": "Thge project code on GADI.",
-                    "default": "",
-                    "fa_icon": "fas fa-users-cog"
+                    "description": "Skip MultiQC.",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },
@@ -323,7 +316,7 @@
                 },
                 "mgnify_link": {
                     "type": "string",
-                    "default": "https://storage.googleapis.com/alphafold-databases/casp14_versions/mgy_clusters_2018_12.fa.gz",
+                    "default": "https://storage.googleapis.com/alphafold-databases/v2.3/mgy_clusters_2022_05.fa.gz",
                     "description": "Link to the MGnify database",
                     "fa_icon": "fas fa-link"
                 },
@@ -341,8 +334,8 @@
                 },
                 "pdb_obsolete_link": {
                     "type": "string",
-                    "default": "ftp://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat",
-                    "description": "Link to the PDV obsolete database",
+                    "default": "https://files.wwpdb.org/pub/pdb/data/status/obsolete.dat",
+                    "description": "Link to the PDB obsolete database",
                     "fa_icon": "fas fa-link"
                 },
                 "uniref30_alphafold2_link": {
@@ -353,25 +346,25 @@
                 },
                 "uniref90_link": {
                     "type": "string",
-                    "default": "ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz",
                     "description": "Link to the UniRef90 database",
                     "fa_icon": "fas fa-link"
                 },
                 "pdb_seqres_link": {
                     "type": "string",
-                    "default": "ftp://ftp.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
+                    "default": "https://files.wwpdb.org/pub/pdb/derived_data/pdb_seqres.txt",
                     "description": "Link to the PDB SEQRES database",
                     "fa_icon": "fas fa-link"
                 },
                 "uniprot_sprot_link": {
                     "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz",
                     "description": "Link to the SwissProt UniProt database",
                     "fa_icon": "fas fa-link"
                 },
                 "uniprot_trembl_link": {
                     "type": "string",
-                    "default": "ftp://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz",
                     "description": "Link to the TrEMBL UniProt database",
                     "fa_icon": "fas fa-link"
                 }
@@ -449,7 +442,7 @@
                 },
                 "uniref30_colabfold_link": {
                     "type": "string",
-                    "default": "https://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2202.tar.gz",
+                    "default": "https://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2302.tar.gz",
                     "description": "Link to the UniRef30 database",
                     "fa_icon": "fas fa-link"
                 },
@@ -643,6 +636,13 @@
                     "description": "Validation of parameters in lenient more.",
                     "hidden": true,
                     "help_text": "Allows string values that are parseable as numbers or booleans. For further information see [JSONSchema docs](https://github.com/everit-org/json-schema#lenient-mode)."
+                },
+                "pipelines_testdata_base_path": {
+                    "type": "string",
+                    "fa_icon": "far fa-check-circle",
+                    "description": "Base URL or local path to location of pipeline test dataset files",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
+                    "hidden": true
                 }
             }
         }
@@ -659,6 +659,9 @@
         },
         {
             "$ref": "#/definitions/esmfold_options"
+        },
+        {
+            "$ref": "#/definitions/process_skipping_options"
         },
         {
             "$ref": "#/definitions/institutional_config_options"
