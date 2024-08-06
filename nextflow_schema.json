@@ -33,7 +33,6 @@
                     "type": "string",
                     "default": "alphafold2",
                     "description": "Specifies the mode in which the pipeline will be run",
-                    "enum": ["alphafold2", "colabfold", "esmfold"],
                     "fa_icon": "fas fa-cogs"
                 },
                 "use_gpu": {

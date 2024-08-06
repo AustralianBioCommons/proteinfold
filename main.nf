@@ -17,7 +17,6 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-<<<<<<< HEAD
 if (params.mode == "alphafold2") {
     include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
     include { ALPHAFOLD2             } from './workflows/alphafold2'
@@ -61,7 +60,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run alphafold2
     //
-    if(params.mode == "alphafold2") {
+    if(params.mode.toLowerCase().split(",").contains("alphafold2")) {
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
         //
@@ -106,7 +105,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run colabfold
     //
-    else if(params.mode == "colabfold") {
+    if(params.mode.toLowerCase().split(",").contains("colabfold")) {
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
         //
@@ -141,7 +140,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run esmfold
     //
-    else if(params.mode == "esmfold") {
+    if(params.mode.toLowerCase().split(",").contains("esmfold")) {
         //
         // SUBWORKFLOW: Prepare esmfold DBs
         //
@@ -160,7 +159,7 @@ workflow NFCORE_PROTEINFOLD {
         //
         ESMFOLD (
             ch_versions,
-            params.esmfold_params_path,
+            Channel.fromPath(params.esmfold_params_path),
             params.num_recycle
         )
         ch_multiqc  = ESMFOLD.out.multiqc_report

@@ -177,7 +177,7 @@ workflow ALPHAFOLD2 {
         ch_af_out_msa,
         ch_af_out_lddt,
         ch_af_out_pdb,
-        Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
+        Channel.fromPath("$projectDir/assets/proteinfold_template.html").first(),
         Channel.value("ALPHAFOLD2")
     )
     

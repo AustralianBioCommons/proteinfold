@@ -105,6 +105,7 @@ workflow ESMFOLD {
         )
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     } else {
+        
         RUN_ESMFOLD(
             ch_fasta,
             ch_esmfold_params,
@@ -124,7 +125,7 @@ workflow ESMFOLD {
         Channel.value([["id":"TEMP"], file("$projectDir/assets/NO_FILE")]),
         ch_all.map{[it[1], [it[2]]]},
         ch_all.map{[it[3], [it[4]]]},
-        Channel.fromPath("$projectDir/assets/alphafold_template.html").first(),
+        Channel.fromPath("$projectDir/assets/proteinfold_template.html", checkIfExists:true).first(),
         Channel.value("ESM-FOLD")
     )
 
