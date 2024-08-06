@@ -17,16 +17,12 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-if (params.mode == "alphafold2") {
-    include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
-    include { ALPHAFOLD2             } from './workflows/alphafold2'
-} else if (params.mode == "colabfold") {
-    include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
-    include { COLABFOLD             } from './workflows/colabfold'
-} else if (params.mode == "esmfold") {
-    include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
-    include { ESMFOLD             } from './workflows/esmfold'
-}
+include { PREPARE_ALPHAFOLD2_DBS } from './subworkflows/local/prepare_alphafold2_dbs'
+include { ALPHAFOLD2             } from './workflows/alphafold2'
+include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
+include { COLABFOLD             } from './workflows/colabfold'
+include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
+include { ESMFOLD             } from './workflows/esmfold'
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -60,7 +56,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run alphafold2
     //
-    if(params.mode == "alphafold2") {
+    if(params.mode.toLowerCase().split(",").contains("alphafold2")) {
         //
         // SUBWORKFLOW: Prepare Alphafold2 DBs
         //
@@ -105,7 +101,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run colabfold
     //
-    else if(params.mode == "colabfold") {
+    if(params.mode.toLowerCase().split(",").contains("colabfold")) {
         //
         // SUBWORKFLOW: Prepare Colabfold DBs
         //
@@ -140,7 +136,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // WORKFLOW: Run esmfold
     //
-    else if(params.mode == "esmfold") {
+    if(params.mode.toLowerCase().split(",").contains("esmfold")) {
         //
         // SUBWORKFLOW: Prepare esmfold DBs
         //
@@ -159,7 +155,7 @@ workflow NFCORE_PROTEINFOLD {
         //
         ESMFOLD (
             ch_versions,
-            params.esmfold_params_path,
+            Channel.fromPath(params.esmfold_params_path),
             params.num_recycle
         )
         ch_multiqc  = ESMFOLD.out.multiqc_report
