@@ -119,7 +119,7 @@ workflow ESMFOLD {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        ch_multiqc_files = ch_multiqc_files.mix(RUN_ESMFOLD.out.multiqc.collect())
+        ch_multiqc_files = ch_multiqc_files.mix(RUN_ESMFOLD.out.multiqc.map{it[1]}.collect())
 
         MULTIQC (
             ch_multiqc_files.collect(),

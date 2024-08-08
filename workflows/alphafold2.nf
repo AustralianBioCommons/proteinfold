@@ -159,7 +159,7 @@ workflow ALPHAFOLD2 {
             ch_uniprot,
             ch_af_all.map{it[2]}
         )
-        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.collect()
+        ch_multiqc_rep = RUN_ALPHAFOLD2_PRED.out.multiqc.map{1}.collect()
         ch_versions = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
         RUN_ALPHAFOLD2_PRED.out.af_out_tsv
         .map{[it[0], it[1].findAll{ it.getName().contains("_lddt_")}]}

@@ -35,8 +35,8 @@ include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.colabfold_alphafold2_params      = WorkflowMain.getColabfoldAlphafold2Params(params)
-params.colabfold_alphafold2_params_path = WorkflowMain.getColabfoldAlphafold2ParamsPath(params)
+params.colabfold_alphafold2_params_link = getColabfoldAlphafold2Params()
+params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
