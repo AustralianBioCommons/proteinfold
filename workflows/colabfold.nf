@@ -113,7 +113,6 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(MMSEQS_COLABFOLDSEARCH.out.versions)
         }
 
-
         //
         // MODULE: Run colabfold
         //

@@ -51,6 +51,8 @@ Thank you to everyone else that has contributed by reporting bugs, enhancements 
 - [[PR #132](https://github.com/nf-core/proteinfold/pull/132)] - Remove `lib/` directory.
 - [[#135](https://github.com/nf-core/proteinfold/issues/135)] - Reduce Alphafold Docker images sizes.
 - [[#115](https://github.com/nf-core/proteinfold/issues/115)] - Throw message error when profile conda is used.
+- [[#131](https://github.com/nf-core/proteinfold/issues/131)] - Add esmfold small tests.
+- [[#144](https://github.com/nf-core/proteinfold/issues/144)] - Force value channels when providing dbs (downloaded) in `main.nf` to enable the processing of multiple samples.
 - [[#147](https://github.com/nf-core/proteinfold/issues/147)] - Update modules to last version.
 - [[#145](https://github.com/nf-core/proteinfold/issues/145)] - Implement test to check the processes/subworkflows triggered when downloading the databases.
 - [[#130](https://github.com/nf-core/proteinfold/issues/130)] - Add `--skip_multiqc` parameter.
