@@ -19,17 +19,7 @@
 
 ## Introduction
 
-<<<<<<< HEAD
-**nf-core/proteinfold** is a bioinformatics pipeline that ...
-
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
-=======
 **nf-core/proteinfold** is a bioinformatics best-practice analysis pipeline for Protein 3D structure prediction.
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
@@ -50,26 +40,6 @@ On release, automated continuous integration tests run the pipeline on a full-si
    iv. [ColabFold](https://github.com/sokrypton/ColabFold) - MMseqs2 local search followed by ColabFold
 
    v. [ESMFold](https://github.com/facebookresearch/esm) - Regular ESM
-<<<<<<< HEAD
-
-## Usage
-
-> [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
-
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
-
-First, prepare a samplesheet with your input data that looks as follows:
-
-The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
-
-- The typical command to run AlphaFold2 mode is shown below:
-
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
-
-- Here is the command to run AlphaFold2 splitting the MSA from the prediction execution:
-=======
 
 ## Usage
 
@@ -88,15 +58,35 @@ nextflow run nf-core/proteinfold \
 The pipeline takes care of downloading the databases and parameters required by AlphaFold2, Colabfold or ESMFold. In case you have already downloaded the required files, you can skip this step by providing the path to the databases using the corresponding parameter [`--alphafold2_db`], [`--colabfold_db`] or [`--esmfold_db`]. Please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) to check the directory structure you need to provide for each of the databases.
 
 - The typical command to run AlphaFold2 mode is shown below:
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
 
-Now, you can run the pipeline using:
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
 
-<<<<<<< HEAD
-- Below, the command to run colabfold_local mode:
-=======
 - Here is the command to run AlphaFold2 splitting the MSA from the prediction execution:
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
+
+  ```console
+  nextflow run nf-core/proteinfold \
+      --input samplesheet.csv \
+      --outdir <OUTDIR> \
+      --mode alphafold2 \
+      --alphafold2_mode split_msa_prediction \
+      --alphafold2_db <null (default) | DB_PATH> \
+      --full_dbs <true/false> \
+      --alphafold2_model_preset monomer \
+      --use_gpu <true/false> \
+      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
+  ```
+
+- Below, the command to run colabfold_local mode:
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -113,11 +103,7 @@ Now, you can run the pipeline using:
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-<<<<<<< HEAD
 - The typical command to run colabfold_webserver mode would be:
-=======
-- Below, the command to run colabfold_local mode:
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
 
   ```console
   nextflow run nf-core/proteinfold \
@@ -134,49 +120,6 @@ Now, you can run the pipeline using:
       -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
   ```
 
-<<<<<<< HEAD
-  [!WARNING]
-
-  > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
-
-- The esmfold mode can be run using the command below:
-=======
-- The typical command to run colabfold_webserver mode would be:
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
-
-  ```console
-  nextflow run nf-core/proteinfold \
-      --input samplesheet.csv \
-      --outdir <OUTDIR> \
-<<<<<<< HEAD
-      --mode esmfold \
-      --esmfold_model_preset <monomer/multimer> \
-      --esmfold_db <null (default) | PATH> \
-      --num_recycles_esmfold 4 \
-=======
-      --mode colabfold \
-      --colabfold_server webserver \
-      --host_url <custom MMSeqs2 API Server URL> \
-      --colabfold_db <null (default) | PATH> \
-      --num_recycles_colabfold 3 \
-      --use_amber <true/false> \
-      --colabfold_model_preset "AlphaFold2-ptm" \
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
-      --use_gpu <true/false> \
-      -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>
-  ```
-
-<<<<<<< HEAD
-  > **Warning:**
-  > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those
-  > provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
-  > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
-
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/proteinfold/usage) and the [parameter documentation](https://nf-co.re/proteinfold/parameters).
-
-## Documentation
-
-=======
   [!WARNING]
 
   > If you aim to carry out a large amount of predictions using the colabfold_webserver mode, please setup and use your own custom MMSeqs2 API Server. You can find instructions [here](https://github.com/sokrypton/ColabFold/tree/main/MsaServer).
@@ -203,7 +146,6 @@ For more details and further functionality, please refer to the [usage documenta
 
 ## Pipeline output
 
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
 To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/proteinfold/results) tab on the nf-core website pipeline page.
 For more details about the output files and reports, please refer to the
 [output documentation](https://nf-co.re/proteinfold/output).
@@ -224,14 +166,7 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 ## Citations
 
-<<<<<<< HEAD
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use nf-core/proteinfold for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
-=======
 If you use nf-core/proteinfold for your analysis, please cite it using the following doi: [10.5281/zenodo.7437038](https://doi.org/10.5281/zenodo.7437038)
->>>>>>> 2c7b861f6e1883406260f1f0f45a0543bcc76927
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
