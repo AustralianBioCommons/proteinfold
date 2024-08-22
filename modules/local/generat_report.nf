@@ -14,8 +14,9 @@ process GENERATE_REPORT {
     val(output_type)
     
     output:
-    tuple val(meta), path ("*.html"), emit: report
-    tuple val(meta), path ("*.png"), emit: images
+    tuple val(meta), path ("*report.html"), emit: report
+    tuple val(meta), path ("*.png"), optional: true, emit: images
+    tuple val(meta), path ("*_LDDT.html"), emit: lddt_images
     //path "versions.yml", emit: versions
 
     when:

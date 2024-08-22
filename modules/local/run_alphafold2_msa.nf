@@ -10,7 +10,7 @@ process RUN_ALPHAFOLD2_MSA {
         error("Local RUN_ALPHAFOLD2_MSA module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
 
-    container "nf-core/proteinfold_alphafold2_msa:dev"
+    container "nf-core/proteinfold_alphafold2_msa:1.1.1"
 
     input:
     tuple val(meta), path(fasta)
@@ -46,9 +46,9 @@ process RUN_ALPHAFOLD2_MSA {
         alphafold2_model_preset += " --pdb70_database_path=./pdb70/pdb70_from_mmcif_200916/pdb70 "
     }
     """
-    if [ -f pdb_seqres/pdb_seqres.txt ]
-        then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
-    fi
+    #if [ -f pdb_seqres/pdb_seqres.txt ]
+    #    then sed -i "/^\\w*0/d" pdb_seqres/pdb_seqres.txt
+    #fi
     python3 /app/alphafold/run_msa.py \
         --fasta_paths=${fasta} \
         --model_preset=${alphafold2_model_preset} \

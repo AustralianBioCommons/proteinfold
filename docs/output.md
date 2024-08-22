@@ -104,7 +104,9 @@ Below you can find some indicative examples of the output images produced by Col
 
 #### predicted Local Distance Difference Test (pLDDT)
 
-![Alt text](../docs/images/T1024_LmrP____408_residues__plddt_mqc.png?raw=true "T1024_coverage")
+:::note
+The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
+:::
 
 #### Predicted Aligned Error (PAE)
 

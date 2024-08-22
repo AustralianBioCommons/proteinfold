@@ -5,9 +5,14 @@
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {
-                    "aria2": {
+                    "fastqc": {
                         "branch": "master",
                         "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
+                    },
+                    "foldseek/easysearch": {
+                        "branch": "master",
+                        "git_sha": "9bfc81874554e87740bcb3e5e07acf0a153c9ecb",
                         "installed_by": ["modules"]
                     },
                     "gunzip": {

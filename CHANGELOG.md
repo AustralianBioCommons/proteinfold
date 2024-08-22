@@ -3,7 +3,30 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.1.0dev - [date]
+## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
+
+- Minor patch release to fix multiqc report.
+
+### Enhancements & fixes
+
+## [[1.1.0](https://github.com/nf-core/proteinfold/releases/tag/1.1.0)] - 2025-06-25
+
+### Credits
+
+Special thanks to the following for their contributions to the release:
+
+- [Adam Talbot](https://github.com/adamrtalbot)
+- [Athanasios Baltzis](https://github.com/athbaltzis)
+- [Björn Langer](https://github.com/bjlang)
+- [Igor Trujnara](https://github.com/itrujnara)
+- [Matthias Hörtenhuber](https://github.com/mashehu)
+- [Maxime Garcia](https://github.com/maxulysse)
+- [Júlia Mir Pedrol](https://github.com/mirpedrol)
+- [Ziad Al-Bkhetan](https://github.com/ziadbkh)
+
+Thank you to everyone else that has contributed by reporting bugs, enhancements or in any other way, shape or form.
+
+## [[1.1.0](https://github.com/nf-core/proteinfold/releases/tag/1.1.0)] - 2025-06-21
 
 ### Enhancements & fixes
 
@@ -30,6 +53,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#115](https://github.com/nf-core/proteinfold/issues/115)] - Throw message error when profile conda is used.
 - [[#131](https://github.com/nf-core/proteinfold/issues/131)] - Add esmfold small tests.
 - [[#144](https://github.com/nf-core/proteinfold/issues/144)] - Force value channels when providing dbs (downloaded) in `main.nf` to enable the processing of multiple samples.
+- [[#147](https://github.com/nf-core/proteinfold/issues/147)] - Update modules to last version.
+- [[#145](https://github.com/nf-core/proteinfold/issues/145)] - Implement test to check the processes/subworkflows triggered when downloading the databases.
+- [[#130](https://github.com/nf-core/proteinfold/issues/130)] - Add `--skip_multiqc` parameter.
+- [[PR #154](https://github.com/nf-core/proteinfold/pull/154)] - Update pipeline template to [nf-core/tools 2.14.1](https://github.com/nf-core/tools/releases/tag/2.14.1).
+- [[#148](https://github.com/nf-core/proteinfold/issues/148)] - Update Colabfold DBs.
+- [[PR #159](https://github.com/nf-core/proteinfold/pull/159)] - Update `mgnify` paths to new available version.
+- [[PR ##163](https://github.com/nf-core/proteinfold/pull/163)] - Fix full test CI.
+- [[#150]](https://github.com/nf-core/proteinfold/issues/150)] - Add thanks to the AWS Open Data Sponsorship program in `README.md`.
+- [[PR ##166](https://github.com/nf-core/proteinfold/pull/166)] - Create 2 different parameters for Colabfold and ESMfold number of recycles.
+
+### Parameters
+
+| Old parameter         | New parameter                            |
+| --------------------- | ---------------------------------------- |
+| `--uniclust30`        |                                          |
+| `--bfd`               | `--bfd_link`                             |
+| `--small_bfd`         | `--small_bfd_link`                       |
+| `--alphafold2_params` | `--alphafold2_params_link`               |
+| `--mgnify`            | `--mgnify_link`                          |
+| `--pdb70`             | `--pdb70_link`                           |
+| `--pdb_mmcif`         | `--pdb_mmcif_link`                       |
+| `--pdb_obsolete`      | `--pdb_obsolete_link`                    |
+| `--uniref90`          | `--uniref90_link`                        |
+| `--pdb_seqres`        | `--pdb_seqres_link`                      |
+| `--uniprot_sprot`     | `--uniprot_sprot_link`                   |
+| `--uniprot_trembl`    | `--uniprot_trembl_link`                  |
+| `--uniclust30_path`   | `--uniref30_alphafold2_path`             |
+| `--uniref30`          | `--uniref30_colabfold_link`              |
+| `--uniref30_path`     | `--uniref30_colabfold_path`              |
+| `--num_recycle`       | `--num_recycles_colabfold`               |
+|                       | `--num_recycles_esmfold`                 |
+|                       | `--uniref30_alphafold2_link`             |
+|                       | `--esmfold_db`                           |
+|                       | `--esmfold_model_preset`                 |
+|                       | `--esmfold_3B_v1`                        |
+|                       | `--esm2_t36_3B_UR50D`                    |
+|                       | `--esm2_t36_3B_UR50D_contact_regression` |
+|                       | `--esmfold_params_path`                  |
+|                       | `--skip_multiqc`                         |
+
+> **NB:** Parameter has been **updated** if both old and new parameter information is present.
+> **NB:** Parameter has been **added** if just the new parameter information is present.
+> **NB:** Parameter has been **removed** if parameter information isn't present.
 
 ## 1.0.0 - White Silver Reebok
 

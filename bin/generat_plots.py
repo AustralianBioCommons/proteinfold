@@ -297,6 +297,7 @@ aligned_structures[0] = ref_structure_path
 """
 alphfold_template = open(args.html_template, "r").read()
 alphfold_template = alphfold_template.replace(f"*sample_name*", args.name)
+alphfold_template = alphfold_template.replace(f"*prog_name*", args.in_type)
 
 i = 0
 for structure in aligned_structures:
@@ -337,5 +338,5 @@ for i in range(0, 5):
         alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
 """
-with open(f"{args.output_dir}/{args.name}_report.html", "w") as out_file:
+with open(f"{args.output_dir}/{args.name}_${args.in_type}_report.html", "w") as out_file:
     out_file.write(alphfold_template)
