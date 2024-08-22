@@ -145,7 +145,7 @@ def generate_output_images(msa_path, plddt_paths, name, out_dir, in_type):
         height=600,
         modebar_remove=['toImage', 'zoomIn', 'zoomOut']
     )
-    html_content = fig.to_html(full_html=False, config={'displayModeBar': True, 'displaylogo': False, 'scrollZoom': True})
+    html_content = fig.to_html(full_html=False, include_plotlyjs='cdn', config={'displayModeBar': True, 'displaylogo': False, 'scrollZoom': True})
 
     with open(f"{out_dir}/{name+('_' if name else '')}coverage_LDDT.html", "w") as out_file:
         out_file.write(html_content)
