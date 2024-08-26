@@ -220,6 +220,7 @@ workflow ALPHAFOLD2 {
     }
 
     emit:
+    pdb            = ch_af_out_pdb
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

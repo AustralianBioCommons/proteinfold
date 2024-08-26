@@ -338,5 +338,5 @@ for i in range(0, 5):
         alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
 """
-with open(f"{args.output_dir}/{args.name}_${args.in_type}_report.html", "w") as out_file:
+with open(f"{args.output_dir}/{args.name}_{args.in_type}_report.html", "w") as out_file:
     out_file.write(alphfold_template)

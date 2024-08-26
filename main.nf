@@ -29,6 +29,8 @@ include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nf
 include { getColabfoldAlphafold2Params     } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { getColabfoldAlphafold2ParamsPath } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 
+include { FOLDSEEK_EASYSEARCH } from './modules/nf-core/foldseek/easysearch'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     COLABFOLD PARAMETER VALUES
@@ -52,7 +54,7 @@ workflow NFCORE_PROTEINFOLD {
     main:
     ch_multiqc  = Channel.empty()
     ch_versions = Channel.empty()
-
+    ch_pred_pdb = Channel.empty()
     //
     // WORKFLOW: Run alphafold2
     //
@@ -94,6 +96,7 @@ workflow NFCORE_PROTEINFOLD {
             ch_pdb_seqres.first(),
             ch_uniprot.first()
         )
+        ch_pred_pdb = ch_pred_pdb.mix(ALPHAFOLD2.out.pdb)
         ch_multiqc  = ALPHAFOLD2.out.multiqc_report
         ch_versions = ch_versions.mix(ALPHAFOLD2.out.versions)
     }
@@ -129,6 +132,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.uniref30.first(),
             params.num_recycles_colabfold
         )
+        ch_pred_pdb = ch_pred_pdb.mix(Channel.empty())
         ch_multiqc  = COLABFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(COLABFOLD.out.versions)
     }
@@ -153,13 +157,25 @@ workflow NFCORE_PROTEINFOLD {
         //
         // WORKFLOW: Run nf-core/esmfold workflow
         //
+        Channel.fromPath(params.esmfold_params_path).view()
         ESMFOLD (
             ch_versions,
             Channel.fromPath(params.esmfold_params_path),
             params.num_recycles_esmfold
         )
+
+        ch_pred_pdb = ch_pred_pdb.mix(ESMFOLD.out.pdb)
         ch_multiqc  = ESMFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(ESMFOLD.out.versions)
+    }
+    
+    if (params.foldseek_search == "easysearch"){
+        ch_foldseek_db = channel.value([["id": params.foldseek_db], file(params.foldseek_db_path, checkIfExists: true)])
+        
+        FOLDSEEK_EASYSEARCH(
+            ch_pred_pdb,
+            ch_foldseek_db
+        )
     }
     emit:
     multiqc_report = ch_multiqc  // channel: /path/to/multiqc_report.html

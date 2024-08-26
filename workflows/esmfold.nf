@@ -50,7 +50,7 @@ workflow ESMFOLD {
     //
     // Create input channel from input file provided through params.input
     //
-    
+    ch_esmfold_params.view()
     Channel
         .fromSamplesheet("input")
         .set { ch_fasta }
@@ -131,6 +131,7 @@ workflow ESMFOLD {
     }
     
     emit:
+    pdb            = RUN_ESMFOLD.out.pdb
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
