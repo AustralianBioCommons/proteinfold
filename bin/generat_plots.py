@@ -9,7 +9,7 @@ import os
 from collections import OrderedDict
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import re
 
 #from Bio import PDB
 
@@ -295,48 +295,51 @@ io.set_structure(aligned_structures[0])
 io.save(ref_structure_path)
 aligned_structures[0] = ref_structure_path
 """
-alphfold_template = open(args.html_template, "r").read()
-alphfold_template = alphfold_template.replace(f"*sample_name*", args.name)
-alphfold_template = alphfold_template.replace(f"*prog_name*", args.in_type)
+alphafold_template = open(args.html_template, "r").read()
+alphafold_template = alphafold_template.replace(f"*sample_name*", args.name)
+alphafold_template = alphafold_template.replace(f"*prog_name*", args.in_type)
 
 i = 0
 for structure in aligned_structures:
-    alphfold_template = alphfold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))
+    alphafold_template = alphafold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))
     i += 1
 
 if True:
     if not args.msa.endswith("NO_FILE"):
         with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.png", "rb") as in_file:
-            alphfold_template = alphfold_template.replace("seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+            alphafold_template = alphafold_template.replace("seq_coverage.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
         
         # with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
         #     seq_cov_html = in_file.read()
-        #     alphfold_template = alphfold_template.replace("<div id=\"seq_cov_placeholder\"></div>", seq_cov_html)
+        #     alphafold_template = alphafold_template.replace("<div id=\"seq_cov_placeholder\"></div>", seq_cov_html)
 
     else:
-        alphfold_template = alphfold_template.replace("seq_coverage.png","")
+        pattern = r'<div id="seq_coverage_container".*?>.*?(<!--.*?-->.*?)*?</div>\s*</div>'
+        alphafold_template = re.sub(pattern, '', alphafold_template, flags=re.DOTALL)
+
+        # alphafold_template = alphafold_template.replace("seq_coverage.png","")
 
     # for i in range(0, len(args.plddt)):
     #     with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.png", "rb") as in_file:
-    #         alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
+    #         alphafold_template = alphafold_template.replace(f"coverage_LDDT_{i}.png", f"data:image/png;base64,{base64.b64encode(in_file.read()).decode('utf-8')}")
      
     # for i in range(0, len(args.plddt)):
     #     with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.html", "r") as in_file:
     #         lddt_html = in_file.read()
-    #         alphfold_template = alphfold_template.replace("<div id=\"lddt_placeholder\"></div>", lddt_html)
+    #         alphafold_template = alphafold_template.replace("<div id=\"lddt_placeholder\"></div>", lddt_html)
 
     with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT.html", "r") as in_file:
         lddt_html = in_file.read()
-        alphfold_template = alphfold_template.replace("<div id=\"lddt_placeholder\"></div>", lddt_html)   
+        alphafold_template = alphafold_template.replace("<div id=\"lddt_placeholder\"></div>", lddt_html)   
        
 """
 with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}seq_coverage.html", "r") as in_file:
-    alphfold_template = alphfold_template.replace(f"seq_coverage.png", f"{in_file.read()}")
+    alphafold_template = alphafold_template.replace(f"seq_coverage.png", f"{in_file.read()}")
 
 for i in range(0, 5):
     with open(f"{args.output_dir}/{args.name + ('_' if args.name else '')}coverage_LDDT_{i}.html", "r") as in_file:
-        alphfold_template = alphfold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
+        alphafold_template = alphafold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
 """
 with open(f"{args.output_dir}/{args.name}_{args.in_type}_report.html", "w") as out_file:
-    out_file.write(alphfold_template)
+    out_file.write(alphafold_template)
