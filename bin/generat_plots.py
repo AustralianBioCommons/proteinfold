@@ -299,6 +299,17 @@ alphafold_template = open(args.html_template, "r").read()
 alphafold_template = alphafold_template.replace(f"*sample_name*", args.name)
 alphafold_template = alphafold_template.replace(f"*prog_name*", args.in_type)
 
+# Convert the Python pdb args list to a JavaScript array format
+args_pdb_array_js = ",\n".join([f'"{model}"' for model in structures])
+
+# Use regex to find and replace the MODELS array in the HTML file
+alphafold_template = re.sub(
+    r'const MODELS = \[.*?\];',  # Match the existing MODELS array in HTML template
+    f'const MODELS = [\n  {args_pdb_array_js}\n];',  # Replace with the new array
+    alphafold_template,
+    flags=re.DOTALL,
+)
+
 i = 0
 for structure in aligned_structures:
     alphafold_template = alphafold_template.replace(f"*_data_ranked_{i}.pdb*", open(structure, "r").read().replace("\n", "\\n"))

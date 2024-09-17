@@ -244,7 +244,7 @@
 
         <!-- Canvas buttons -->
         <div id="canvas_button_container" class="flex-1 p-6 pb-2 flex justify-center items-end bg-black gap-6">
-          <button
+          <!-- <button
             class="selected group btn btn-canvas w-24 rounded bg-black py-3 text-sm font-semibold text-white hover:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800"
             id="btn-ranked_0"
             onclick="setModel(0);"
@@ -303,7 +303,7 @@
               class="inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2"
             />
             Ranked 4
-          </button>
+          </button> -->
         </div>
         <!-- <div class="text-white mx-auto font-semibold pb-4">
           The top-ranked structures predicted by Alphafold
@@ -636,6 +636,7 @@
 
       loadModel();
       loadModelImage();
+      generateButtons();
 
       while (true) {
         if (!state.loading) {
@@ -851,6 +852,27 @@
         })
       );
       document.body.removeChild(saveLink);
+    };
+
+    const generateButtons = () => {
+      const container = document.getElementById("canvas_button_container");
+
+      MODELS.forEach((model, index) => {
+        const button = document.createElement("button");
+        button.className =
+          "selected group btn btn-canvas w-24 rounded bg-black py-3 text-sm font-semibold text-white hover:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800";
+        button.id = `btn-${model.split(".")[0]}`; // Use model name without extension as ID
+        button.onclick = () => setModel(index);
+        button.innerHTML = `
+      <img
+        id="image${index}"
+        class="inline-block w-20 h-20 border-2 border-gray-300 group-hover:border-gray-400 rounded-md mb-2"
+      />
+      ${model.split(".")[0]} <!-- Display the model name without extension -->
+    `;
+
+        container.appendChild(button);
+      });
     };
 
     const updateButtons = () => {
