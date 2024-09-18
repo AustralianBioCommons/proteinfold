@@ -3,9 +3,6 @@ reports:
     display: "MultiQC HTML report"
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
-  "*_alphafold.html":
+  "*_report.html":
     display: "Predected structures"
-  "*_alphafold2.html":
-    display: "Predected structures 2"
-  "*.png":
-    display: "plots"
+  
