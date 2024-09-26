@@ -10,7 +10,6 @@ from collections import OrderedDict
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
-
 #from Bio import PDB
 
 def generate_output_images(msa_path, plddt_paths, name, out_dir, in_type):
@@ -110,7 +109,7 @@ def generate_output_images(msa_path, plddt_paths, name, out_dir, in_type):
             y=value_plddt,
             mode='lines',
             name=rank_label,
-            text=[f"Position {i}: {value:.2f}" for i, value in enumerate(value_plddt)],
+            text=[f"({i}, {value:.2f})" for i, value in enumerate(value_plddt)],
             hoverinfo='text'
         ))
     fig.update_layout(
@@ -168,7 +167,6 @@ def generate_output_images(msa_path, plddt_paths, name, out_dir, in_type):
     plt.savefig(f"{out_dir}/{name+('_' if name else '')}PAE.png")
     """
     ##################################################################
-    
 
 def generate_plots(msa_path, plddt_paths, name, out_dir):
     msa = []
@@ -263,11 +261,42 @@ def align_structures(structures):
     return aligned_structures
     """
 
+def pdb_to_lddt(pdb_files):
+    output_files = []
+    averages = []
+
+    for pdb_file in pdb_files:
+        output_file = f"{pdb_file.replace('.pdb', '')}_plddt.tsv"
+        output_files.append(output_file)
+
+        plddt_values = []
+        seen_lines = set()
+
+        with open(pdb_file, 'r') as infile:
+            for line in infile:
+                columns = line.split()
+                if len(columns) >= 11:
+                    key = f"{columns[5]}\t{columns[10]}"
+                    if key not in seen_lines:
+                        seen_lines.add(key)
+                        plddt_values.append(float(columns[10]))
+            
+        # Calculate the average PLDDT value for the current file
+        if plddt_values:
+            avg_plddt = sum(plddt_values) / len(plddt_values)
+            averages.append(avg_plddt)
+        else:
+            averages.append(0.0)
+
+        with open(output_file, 'w') as outfile:
+            outfile.write("\t".join(map(str, plddt_values)) + "\n")
+
+    return output_files, averages
+
 print("Starting..")
 parser = argparse.ArgumentParser()
 parser.add_argument('--type',  dest='in_type')
 parser.add_argument('--msa',   dest='msa',required=True)
-parser.add_argument('--plddt', dest='plddt',required=True, nargs="+")
 parser.add_argument('--pdb',   dest='pdb',required=True, nargs="+")
 parser.add_argument('--name',  dest='name')
 parser.add_argument('--output_dir',dest='output_dir')
@@ -277,9 +306,9 @@ parser.set_defaults(in_type='ESM-FOLD')
 parser.set_defaults(name='')
 args = parser.parse_args()
 
+lddt_files, lddt_averages = pdb_to_lddt(args.pdb)
 
-generate_output_images(args.msa, args.plddt, args.name, args.output_dir, args.in_type)
-
+generate_output_images(args.msa, lddt_files, args.name, args.output_dir, args.in_type)
 #generate_plots(args.msa, args.plddt, args.name, args.output_dir)
 
 print("generating html report...")
@@ -299,16 +328,16 @@ alphafold_template = open(args.html_template, "r").read()
 alphafold_template = alphafold_template.replace(f"*sample_name*", args.name)
 alphafold_template = alphafold_template.replace(f"*prog_name*", args.in_type)
 
-# Convert the Python pdb args list to a JavaScript array format
 args_pdb_array_js = ",\n".join([f'"{model}"' for model in structures])
-
-# Use regex to find and replace the MODELS array in the HTML file
 alphafold_template = re.sub(
     r'const MODELS = \[.*?\];',  # Match the existing MODELS array in HTML template
     f'const MODELS = [\n  {args_pdb_array_js}\n];',  # Replace with the new array
     alphafold_template,
     flags=re.DOTALL,
 )
+
+averages_js_array = f"const LDDT_AVERAGES = {lddt_averages};"
+alphafold_template = alphafold_template.replace("const LDDT_AVERAGES = [];", averages_js_array)
 
 i = 0
 for structure in aligned_structures:
@@ -352,5 +381,6 @@ for i in range(0, 5):
         alphafold_template = alphafold_template.replace(f"coverage_LDDT_{i}.png", f"{in_file.read()}")
 
 """
+
 with open(f"{args.output_dir}/{args.name}_{args.in_type}_report.html", "w") as out_file:
     out_file.write(alphafold_template)

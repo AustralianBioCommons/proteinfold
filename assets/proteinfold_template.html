@@ -315,12 +315,12 @@
         <div>
           <div class="text-2xl font-bold tracking-tight text-gray-900">Information</div>
           <!-- Structure information -->
-          <div
-            id="structure-info"
-            class="mt-2 mb-6 shadow-md p-6 bg-white rounded border flex justify-between font-semibold"
-          >
-            <div>Program: <span class="font-normal">*prog_name*</span></div>
-            <div>ID: <span class="font-normal">*sample_name*</span></div>
+          <div id="structure-info" class="mt-2 mb-6 shadow-md p-6 bg-white rounded border font-semibold">
+            <div class="flex justify-between">
+              <div>Program: <span class="font-normal">*prog_name*</span></div>
+              <div>ID: <span class="font-normal">*sample_name*</span></div>
+            </div>
+            <div>Average: <span id="lddt-average" class="font-normal"></span></div>
           </div>
 
           <div>
@@ -602,6 +602,8 @@
       "coverage_LDDT_4.png",
     ];
 
+    const LDDT_AVERAGES = [];
+
     const REPRESENTATIONS = ["cartoon", "ball+stick", "surface", "backbone"];
 
     const DEFAULT_REPRESENTATION = REPRESENTATIONS[0];
@@ -634,6 +636,8 @@
       // Handle window resizing
       window.addEventListener("resize", () => stage.handleResize());
 
+      document.getElementById("lddt-average").textContent = LDDT_AVERAGES[0];
+
       loadModel();
       loadModelImage();
       generateButtons();
@@ -654,6 +658,7 @@
     const setModel = (ix) => {
       state.model = ix;
       //document.getElementById("lddt_img").src = LDDT_IMGS[ix];
+      document.getElementById("lddt-average").textContent = LDDT_AVERAGES[ix];
       stage.removeComponent(state.modelObject);
       setLoading(1);
 
